@@ -5,10 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ball
-  - 2point
-  - 3point
-  - 4point
   - Walls
+  - Extra long
+  - 2 Point
+  - 3 Point
   layers:
   - Default
   - TransparentFX

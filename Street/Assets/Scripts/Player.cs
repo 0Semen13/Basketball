@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : MonoBehaviour {
     [SerializeField] private bool developerMode;
@@ -9,6 +10,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private float speed; //Скорость
 
+    [SerializeField] Transform player; //Игрок
     [SerializeField] Transform ball; //Мяч
     [SerializeField] Transform hands; //Руки
     [SerializeField] Transform rightHand; //Праввая рука
@@ -21,11 +23,21 @@ public class Player : MonoBehaviour {
     [SerializeField] Transform miss4;
     [SerializeField] Transform miss5;
     [SerializeField] Transform miss6;
+    [SerializeField] Transform teleportPosition; //Позиция телепорта
 
     private bool ballInHands = false; //Мяч в руках
     private bool ballFlying = false; //Мяч летит (Не в руках)
     private bool ballStart = true; //Мяч при старте
     private float t0 = 0;
+
+    [SerializeField] private double Percentage2Point = 50;
+    //[SerializeField] private double Percentage3Point = 40;
+    //[SerializeField] private double PercentageExtraLong = 30;
+    private bool TwoPoint = false;
+    private bool ThreePoint = false;
+    private bool SuperPoint = true;
+
+    int num = 1;
 
     void Update() {
         if (isPC) {
@@ -55,25 +67,62 @@ public class Player : MonoBehaviour {
                     ballInHands = false;
                     ballFlying = true;
                     t0 = 0;
+                    num = Random.Range(1, 100);
                 }
             }
-
             if (ballFlying && !ballStart) {
-                t0 += Time.deltaTime;
-                float duration = 0.5f; //Длительность
-                float time = t0 / duration; //Время полета
 
-                Vector3 A = posOverHead.position;
-                Vector3 B = target.position;
-                Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции полета
-                Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
-                ball.position = posFly + arc;
+                if(SuperPoint && ThreePoint && TwoPoint) {
+                    Debug.Log("2 ОЧКА!");
+                }
 
-                ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
+                if(SuperPoint && ThreePoint && !TwoPoint) {
+                    Debug.Log("3 ОЧКА!");
+                }
 
-                if (time >= 1) {
-                    ballFlying = false;
-                    ball.GetComponent<Rigidbody>().isKinematic = false;
+                if(SuperPoint && !ThreePoint && !TwoPoint) {
+                    Debug.Log("СВЕРХ ДАЛЬНИЙ!");
+                }
+
+                if (num < Percentage2Point) { //Попал в процент попадания
+                    t0 += Time.deltaTime;
+                    float duration = 0.5f; //Длительность
+                    float time = t0 / duration; //Время полета
+
+                    Vector3 A = posOverHead.position;
+                    Vector3 B = target.position;
+                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
+                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+                    ball.position = posFly + arc;
+
+                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
+
+                    if (time >= 1) {
+                        ballFlying = false;
+                        ball.GetComponent<Rigidbody>().isKinematic = false;
+                        Debug.Log("Прямо в цель! Выпало число " + num + ", которое входит в верятность " + Percentage2Point);
+                    }
+                }
+                else {
+                    int num2 = Random.Range(1, 6);
+
+                    t0 += Time.deltaTime;
+                    float duration = 0.5f; //Длительность
+                    float time = t0 / duration; //Время полета
+
+                    Vector3 A = posOverHead.position;
+                    Vector3 B = miss1.position;
+                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
+                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+                    ball.position = posFly + arc;
+
+                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
+
+                    if (time >= 1) {
+                        ballFlying = false;
+                        ball.GetComponent<Rigidbody>().isKinematic = false;
+                        Debug.Log("Промах! Выпало число " + num + ", которое не входит в верятность " + Percentage2Point);
+                    }
                 }
             }
 
@@ -93,8 +142,26 @@ public class Player : MonoBehaviour {
             ball.GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        if (other.gameObject.tag == "Walls") { //Телепорт игрока при выходя за площадку
+        if (other.gameObject.tag == "2 Point") {
+            TwoPoint = true;
+            Debug.Log("2 ААА!");
+        }
 
+        if (other.gameObject.tag == "3 Point") {
+            ThreePoint = true;
+            Debug.Log("3 ААА!");
+        }
+    }
+
+    private void OnTriggerExit(Collider other) {
+        if (other.gameObject.tag == "2 Point") {
+            TwoPoint = false;
+            Debug.Log("2 ООО!");
+        }
+
+        if (other.gameObject.tag == "3 Point") {
+            ThreePoint = false;
+            Debug.Log("3 ООО!");
         }
     }
 }
