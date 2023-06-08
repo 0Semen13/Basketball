@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
     private bool Ban = false; //Запрет на бросок
     private float t0 = 0;
 
-    [SerializeField] private double CurrentPercentage2Point = 70; //Стартовые значения процентов для сброса данных
+    [SerializeField] private double CurrentPercentage2Point = 70; //Текущие значения процентов
     [SerializeField] private double CurrentPercentage3Points = 60;
     [SerializeField] private double CurrentPercentageExtraLong = 50;
 
@@ -83,7 +83,7 @@ public class Player : MonoBehaviour {
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
         }
-        else if(!isPC && isPhone) {
+        else if (!isPC && isPhone) {
             canvasControlPhone.gameObject.SetActive(true);
         }
     }
@@ -150,6 +150,7 @@ public class Player : MonoBehaviour {
                     ball.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
                     hands.localEulerAngles = Vector3.right * 0;
                     rightHand.localEulerAngles = Vector3.left * 50;
+                    ButtonDownB = false;
                 }
 
                 if (ButtonUpB && !Ban) {
@@ -163,6 +164,9 @@ public class Player : MonoBehaviour {
                     num = Random.Range(1, 100); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
 
+                    ButtonUpB = false;
+                }
+                else {
                     ButtonUpB = false;
                 }
             }
