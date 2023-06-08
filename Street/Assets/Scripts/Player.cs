@@ -25,17 +25,19 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform miss5;
     [SerializeField] private Transform miss6;
     [SerializeField] private Transform teleportPosition; //Позиция телепорта
+    [SerializeField] private Transform PositionBall;
 
     [SerializeField] private Transform[] Misses; //Массив точек промаха
 
     private bool ballInHands = false; //Мяч в руках
     private bool ballFlying = false; //Мяч летит (Не в руках)
     private bool ballStart = true; //Мяч при старте
+    private bool Ban = false; //Запрет на бросок
     private float t0 = 0;
 
-    [SerializeField] private double Percentage2Point = 50;
-    [SerializeField] private double Percentage3Point = 40;
-    [SerializeField] private double PercentageExtraLong = 30;
+    [SerializeField] private double CurrentPercentage2Point = 70; //Стартовые значения процентов для сброса данных
+    [SerializeField] private double CurrentPercentage3Points = 60;
+    [SerializeField] private double CurrentPercentageExtraLong = 50;
 
     private bool TwoPoint = false;
     private bool ThreePoint = false;
@@ -59,10 +61,14 @@ public class Player : MonoBehaviour {
     private bool ButtonUpB = false;
     private bool ButtonDownB = false;
 
-    [SerializeField] private GameObject canvasControlPhone; //Игрок
+    [SerializeField] private GameObject canvasControlPhone;
+    [SerializeField] private Rigidbody rb;
 
     private void Start() {
+        rb = GetComponent<Rigidbody>();
+
         player.position = teleportPosition.position;
+        ball.position = PositionBall.position;
 
         SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
 
@@ -82,7 +88,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (isPC) {
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             transform.position += direction * speed * Time.deltaTime; //Движение игрока
@@ -93,7 +99,7 @@ public class Player : MonoBehaviour {
                 ballStart = false;
                 pnt = 0;
 
-                if (Input.GetKey(KeyCode.Space)) {
+                if (Input.GetKey(KeyCode.Space) && !Ban) {
                     ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
@@ -107,7 +113,7 @@ public class Player : MonoBehaviour {
                     rightHand.localEulerAngles = Vector3.left * 50;
                 }
 
-                if (Input.GetKeyUp(KeyCode.Space)) {
+                if (Input.GetKeyUp(KeyCode.Space) && !Ban) {
                     rightHand.localEulerAngles = Vector3.left * 0;
                     ballInHands = false;
                     ballFlying = true;
@@ -118,81 +124,7 @@ public class Player : MonoBehaviour {
             }
 
             if (ballFlying && !ballStart) {
-                if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
-                    if (num <= Percentage2Point) {
-                        isHit = true;
-                        pnt = 2;
-                    }
-                }
-
-                if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
-                    if (num <= Percentage3Point) {
-                        isHit = true;
-                        pnt = 3;
-                    }
-                }
-
-                if (SuperPoint && !ThreePoint && !TwoPoint) { //При броску находится в сверх дальней зоне
-                    if (num <= PercentageExtraLong) {
-                        isHit = true;
-                        pnt = 4;
-                    }
-                }
-
-                if (isHit) { //Попал в кольцо
-                    t0 += Time.deltaTime;
-                    float duration = 0.5f; //Длительность
-                    float time = t0 / duration; //Время полета
-
-                    Vector3 A = posOverHead.position;
-                    Vector3 B = target.position;
-                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
-                    ball.position = posFly + arc;
-
-                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
-
-                    if (time >= 1) {
-                        ballFlying = false;
-                        ball.GetComponent<Rigidbody>().isKinematic = false;
-
-                        if (pnt == 2) { //Добавление очков
-                            Debug.Log("+2 очка! Выпало число " + num + ", которое входит в верятность " + Percentage2Point);
-                            point += 2;
-                        }
-                        else if (pnt == 3) {
-                            Debug.Log("+3 очка! Выпало число " + num + ", которое входит в верятность " + Percentage3Point);
-                            point += 3;
-                        }
-                        else if (pnt == 4) {
-                            Debug.Log("+4 очка! Выпало число " + num + ", которое входит в верятность " + PercentageExtraLong);
-                            point += 4;
-                        }
-
-                        numberBalls += 1;
-
-                        SaveScript.SaveGame(); //Сохранение очков и мячей после попадания
-                    }
-                }
-                else {
-                    t0 += Time.deltaTime;
-                    float duration = 0.5f; //Длительность
-                    float time = t0 / duration; //Время полета
-
-                    Vector3 A = posOverHead.position;
-                    Vector3 B = Misses[mss - 1].position;
-                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
-                    ball.position = posFly + arc;
-
-                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
-
-                    if (time >= 1) {
-                        ballFlying = false;
-                        ball.GetComponent<Rigidbody>().isKinematic = false;
-                        Debug.Log("ПРОМАХ! Выпало число: " + num);
-                    }
-                }
+                ThrowFunction();
             }
         }
 
@@ -206,7 +138,7 @@ public class Player : MonoBehaviour {
                 ballStart = false;
                 pnt = 0;
 
-                if (ButtonDownB) {
+                if (ButtonDownB && !Ban) {
                     ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
@@ -220,7 +152,7 @@ public class Player : MonoBehaviour {
                     rightHand.localEulerAngles = Vector3.left * 50;
                 }
 
-                if (ButtonUpB) {
+                if (ButtonUpB && !Ban) {
                     ButtonDownB = false;
 
                     hands.localEulerAngles = Vector3.right * 0;
@@ -237,85 +169,10 @@ public class Player : MonoBehaviour {
             else {
                 ButtonDownB = false;
                 ButtonUpB = false;
-
             }
 
             if (ballFlying && !ballStart) {
-                if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
-                    if (num <= Percentage2Point) {
-                        isHit = true;
-                        pnt = 2;
-                    }
-                }
-
-                if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
-                    if (num <= Percentage3Point) {
-                        isHit = true;
-                        pnt = 3;
-                    }
-                }
-
-                if (SuperPoint && !ThreePoint && !TwoPoint) { //При броску находится в сверх дальней зоне
-                    if (num <= PercentageExtraLong) {
-                        isHit = true;
-                        pnt = 4;
-                    }
-                }
-
-                if (isHit) { //Попал в кольцо
-                    t0 += Time.deltaTime;
-                    float duration = 0.5f; //Длительность
-                    float time = t0 / duration; //Время полета
-
-                    Vector3 A = posOverHead.position;
-                    Vector3 B = target.position;
-                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
-                    ball.position = posFly + arc;
-
-                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
-
-                    if (time >= 1) {
-                        ballFlying = false;
-                        ball.GetComponent<Rigidbody>().isKinematic = false;
-
-                        if (pnt == 2) { //Добавление очков
-                            Debug.Log("+2 очка! Выпало число " + num + ", которое входит в верятность " + Percentage2Point);
-                            point += 2;
-                        }
-                        else if (pnt == 3) {
-                            Debug.Log("+3 очка! Выпало число " + num + ", которое входит в верятность " + Percentage3Point);
-                            point += 3;
-                        }
-                        else if (pnt == 4) {
-                            Debug.Log("+4 очка! Выпало число " + num + ", которое входит в верятность " + PercentageExtraLong);
-                            point += 4;
-                        }
-
-                        numberBalls += 1;
-
-                        SaveScript.SaveGame(); //Сохранение очков и мячей после попадания
-                    }
-                }
-                else {
-                    t0 += Time.deltaTime;
-                    float duration = 0.5f; //Длительность
-                    float time = t0 / duration; //Время полета
-
-                    Vector3 A = posOverHead.position;
-                    Vector3 B = Misses[mss - 1].position;
-                    Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-                    Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
-                    ball.position = posFly + arc;
-
-                    ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
-
-                    if (time >= 1) {
-                        ballFlying = false;
-                        ball.GetComponent<Rigidbody>().isKinematic = false;
-                        Debug.Log("ПРОМАХ! Выпало число: " + num);
-                    }
-                }
+                ThrowFunction();
             }
         }
 
@@ -337,10 +194,92 @@ public class Player : MonoBehaviour {
         ballDisplay.text = numberBalls.ToString();
     }
 
+    private void ThrowFunction() {
+        if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
+            if (num <= CurrentPercentage2Point) {
+                isHit = true;
+                pnt = 2;
+            }
+        }
+
+        if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
+            if (num <= CurrentPercentage3Points) {
+                isHit = true;
+                pnt = 3;
+            }
+        }
+
+        if (SuperPoint && !ThreePoint && !TwoPoint) { //При броску находится в сверх дальней зоне
+            if (num <= CurrentPercentageExtraLong) {
+                isHit = true;
+                pnt = 4;
+            }
+        }
+
+        if (isHit) { //Попал в кольцо
+            t0 += Time.deltaTime;
+            float duration = 0.5f; //Длительность
+            float time = t0 / duration; //Время полета
+
+            Vector3 A = posOverHead.position;
+            Vector3 B = target.position;
+            Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
+            Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+            ball.position = posFly + arc;
+
+            ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
+
+            if (time >= 1) {
+                ballFlying = false;
+                ball.GetComponent<Rigidbody>().isKinematic = false;
+
+                if (pnt == 2) { //Добавление очков
+                    point += 2;
+                }
+                else if (pnt == 3) {
+                    point += 3;
+                }
+                else if (pnt == 4) {
+                    point += 4;
+                }
+
+                numberBalls += 1;
+
+                SaveScript.SaveGame(); //Сохранение очков и мячей после попадания
+            }
+        }
+        else {
+            t0 += Time.deltaTime;
+            float duration = 0.5f; //Длительность
+            float time = t0 / duration; //Время полета
+
+            Vector3 A = posOverHead.position;
+            Vector3 B = Misses[mss - 1].position;
+            Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
+            Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+            ball.position = posFly + arc;
+
+            ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
+
+            if (time >= 1) {
+                ballFlying = false;
+                ball.GetComponent<Rigidbody>().isKinematic = false;
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Ball" && !ballInHands) {  //Подбор мяча
             ballInHands = true;
             ball.GetComponent<Rigidbody>().isKinematic = true;
+        }
+
+        if (other.gameObject.tag == "Walls") { //Выход за пределы площадки
+            player.position = teleportPosition.position;
+        }
+
+        if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
+            Ban = true;
         }
 
         if (other.gameObject.tag == "2 Point") {
@@ -349,6 +288,10 @@ public class Player : MonoBehaviour {
 
         if (other.gameObject.tag == "3 Point") {
             ThreePoint = true;
+        }
+
+        if (other.gameObject.tag == "Extra long") {
+            Ban = false;
         }
     }
 
@@ -359,6 +302,14 @@ public class Player : MonoBehaviour {
 
         if (other.gameObject.tag == "3 Point") {
             ThreePoint = false;
+        }
+
+        if (other.gameObject.tag == "Extra long") {
+            Ban = true;
+        }
+
+        if (other.gameObject.tag == "DeadZones") {
+            Ban = false;
         }
     }
 

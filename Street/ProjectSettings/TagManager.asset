@@ -9,6 +9,7 @@ TagManager:
   - Extra long
   - 2 Point
   - 3 Point
+  - DeadZones
   layers:
   - Default
   - TransparentFX

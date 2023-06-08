@@ -20,22 +20,16 @@ public class SaveAndLoad : MonoBehaviour {
         PlayerPrefs.SetInt("Ball", numberBalls_S);
 
         PlayerPrefs.Save();
-
-        Debug.Log("Данные игры сохранены! Очки: " + point_S + ", Мячи: " + numberBalls_S);
     }
 
     public void LoadGame() {
         point_S = PlayerPrefs.GetInt("Points");
         numberBalls_S = PlayerPrefs.GetInt("Ball");
-
-        Debug.Log("Данные игры загружены! Очки: " + point_S + ", Мячи: " + numberBalls_S);
     }
 
     public void ResetData() {
         PlayerPrefs.DeleteAll();
         point_S = 0;
         numberBalls_S = 0;
-
-        Debug.Log("Весь прогресс удален!");
     }
 }
