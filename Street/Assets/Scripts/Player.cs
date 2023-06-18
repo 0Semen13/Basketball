@@ -35,21 +35,21 @@ public class Player : MonoBehaviour {
     private bool Ban = false; //Запрет на бросок
     private float t0 = 0;
 
-    [SerializeField] private double CurrentPercentage2Point = 70; //Текущие значения процентов
-    [SerializeField] private double CurrentPercentage3Points = 60;
-    [SerializeField] private double CurrentPercentageExtraLong = 50;
+    [SerializeField] private double StartPercentage2Point = 50; //Стартовые значения процентов
+    [SerializeField] private double StartPercentage3Points = 40;
+    [SerializeField] private double StartPercentageExtraLong = 30;
 
     private bool TwoPoint = false;
     private bool ThreePoint = false;
     private bool SuperPoint = true;
     private bool isHit = false;
 
-    private int num = 1; //Число, сравнивоемое с вероятностью
+    private int num = 0; //Число, сравнивоемое с вероятностью
     private int pnt = 0; //Число, сколько очков должно добавиться после попадания
     private int mss = 0; //Число, означающее индекс промаха при промахе
 
-    public int point;
-    public int numberBalls;
+    public int point; //Забитые очки
+    public int numberBalls; //Забитые мячи
 
     [SerializeField] private Text pointDisplay;
     [SerializeField] private Text ballDisplay;
@@ -62,11 +62,8 @@ public class Player : MonoBehaviour {
     private bool ButtonDownB = false;
 
     [SerializeField] private GameObject canvasControlPhone;
-    [SerializeField] private Rigidbody rb;
 
     private void Start() {
-        rb = GetComponent<Rigidbody>();
-
         player.position = teleportPosition.position;
         ball.position = PositionBall.position;
 
@@ -118,7 +115,7 @@ public class Player : MonoBehaviour {
                     ballInHands = false;
                     ballFlying = true;
                     t0 = 0;
-                    num = Random.Range(1, 100); //Определяет число, для сравнения с вероятностью
+                    num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
                 }
             }
@@ -161,7 +158,7 @@ public class Player : MonoBehaviour {
                     ballInHands = false;
                     ballFlying = true;
                     t0 = 0;
-                    num = Random.Range(1, 100); //Определяет число, для сравнения с вероятностью
+                    num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
 
                     ButtonUpB = false;
@@ -200,21 +197,21 @@ public class Player : MonoBehaviour {
 
     private void ThrowFunction() {
         if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
-            if (num <= CurrentPercentage2Point) {
+            if (num <= StartPercentage2Point) {
                 isHit = true;
                 pnt = 2;
             }
         }
 
         if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
-            if (num <= CurrentPercentage3Points) {
+            if (num <= StartPercentage3Points) {
                 isHit = true;
                 pnt = 3;
             }
         }
 
         if (SuperPoint && !ThreePoint && !TwoPoint) { //При броску находится в сверх дальней зоне
-            if (num <= CurrentPercentageExtraLong) {
+            if (num <= StartPercentageExtraLong) {
                 isHit = true;
                 pnt = 4;
             }
