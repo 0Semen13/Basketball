@@ -62,6 +62,7 @@ public class Player : MonoBehaviour {
     private bool ButtonDownB = false;
 
     [SerializeField] private GameObject canvasControlPhone;
+    [SerializeField] private GameObject ChanceBar;
 
     private void Start() {
         player.position = teleportPosition.position;
@@ -76,6 +77,8 @@ public class Player : MonoBehaviour {
 
         SaveAndLoad saveAndLoad_balls = GO.GetComponent<SaveAndLoad>();
         numberBalls = saveAndLoad_balls.numberBalls_S;
+
+        ChanceBar.gameObject.SetActive(false);
 
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
@@ -97,6 +100,8 @@ public class Player : MonoBehaviour {
                 pnt = 0;
 
                 if (Input.GetKey(KeyCode.Space) && !Ban) {
+                    ChanceBar.gameObject.SetActive(true);
+
                     ball.position = posOverHead.position; //ѕодн€тие рук и м€ча при зажатом пробеле и м€че в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
@@ -117,6 +122,8 @@ public class Player : MonoBehaviour {
                     t0 = 0;
                     num = Random.Range(1, 101); //ќпредел€ет число, дл€ сравнени€ с веро€тностью
                     mss = Random.Range(1, 7); //ќпредел€ет, куда попадет промах
+
+                    StartCoroutine(Active_bar());
                 }
             }
 
@@ -320,5 +327,10 @@ public class Player : MonoBehaviour {
 
     public void ButtonDown() {
         ButtonDownB = true;
+    }
+
+    IEnumerator Active_bar() {
+        yield return new WaitForSeconds(2);
+        ChanceBar.gameObject.SetActive(false);
     }
 }
