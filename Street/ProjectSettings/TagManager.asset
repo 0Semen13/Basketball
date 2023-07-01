@@ -10,6 +10,7 @@ TagManager:
   - 2 Point
   - 3 Point
   - DeadZones
+  - Green
   layers:
   - Default
   - TransparentFX
