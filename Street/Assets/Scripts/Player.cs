@@ -35,9 +35,13 @@ public class Player : MonoBehaviour {
     private bool Ban = false; //Запрет на бросок
     private float t0 = 0;
 
-    [SerializeField] private double StartPercentage2Point = 50; //Стартовые значения процентов
-    [SerializeField] private double StartPercentage3Points = 40;
-    [SerializeField] private double StartPercentageExtraLong = 30;
+    [SerializeField] private double currentPercentage2Point = 70; //Текущие значения процентов
+    [SerializeField] private double currentPercentage3Points = 60;
+    [SerializeField] private double currentPercentageExtraLong = 50;
+    [SerializeField] private double startPercentage2Point = 70; //Стартовые значения процентов
+    [SerializeField] private double startPercentage3Points = 60;
+    [SerializeField] private double startPercentageExtraLong = 50;
+    private double chanceForBar;
 
     private bool TwoPoint = false;
     private bool ThreePoint = false;
@@ -62,8 +66,12 @@ public class Player : MonoBehaviour {
     private bool ButtonDownB = false;
 
     [SerializeField] private GameObject canvasControlPhone;
+    [SerializeField] private GameObject GOBar;
+    [SerializeField] private float barDelayTime = 1.5f;
 
     private void Start() {
+        GOBar.gameObject.SetActive(false);
+
         player.position = teleportPosition.position;
         ball.position = PositionBall.position;
 
@@ -97,6 +105,7 @@ public class Player : MonoBehaviour {
                 pnt = 0;
 
                 if (Input.GetKey(KeyCode.Space) && !Ban) {
+                    GOBar.gameObject.SetActive(true);
                     ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
@@ -117,6 +126,9 @@ public class Player : MonoBehaviour {
                     t0 = 0;
                     num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
+                    chanceForBar = GameObject.Find("Chance_Bar").GetComponent<Bar>().chance;
+
+                    StartCoroutine(Active_bar());
                 }
             }
 
@@ -197,21 +209,21 @@ public class Player : MonoBehaviour {
 
     private void ThrowFunction() {
         if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
-            if (num <= StartPercentage2Point) {
+            if (num <= (currentPercentage2Point * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 2;
             }
         }
 
         if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
-            if (num <= StartPercentage3Points) {
+            if (num <= (currentPercentage3Points * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 3;
             }
         }
 
-        if (SuperPoint && !ThreePoint && !TwoPoint) { //При броску находится в сверх дальней зоне
-            if (num <= StartPercentageExtraLong) {
+        if (SuperPoint && !ThreePoint && !TwoPoint) { //При броске находится в сверх дальней зоне
+            if (num <= (currentPercentageExtraLong * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 4;
             }
@@ -320,5 +332,10 @@ public class Player : MonoBehaviour {
 
     public void ButtonDown() {
         ButtonDownB = true;
+    }
+
+    IEnumerator Active_bar() {
+        yield return new WaitForSeconds(barDelayTime);
+        GOBar.gameObject.SetActive(false);
     }
 }
