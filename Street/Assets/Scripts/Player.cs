@@ -41,7 +41,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private double startPercentage2Point = 70; //Стартовые значения процентов
     [SerializeField] private double startPercentage3Points = 60;
     [SerializeField] private double startPercentageExtraLong = 50;
-    private double chanceForBar;
+    private float chanceForBar;
 
     private bool TwoPoint = false;
     private bool ThreePoint = false;
@@ -119,20 +119,30 @@ public class Player : MonoBehaviour {
                     rightHand.localEulerAngles = Vector3.left * 50;
                 }
 
-                if (Input.GetKeyUp(KeyCode.Space) && !Ban) {
+                if (Input.GetKeyUp(KeyCode.Space) && !Ban && !ballFlying) {
                     rightHand.localEulerAngles = Vector3.left * 0;
-                    ballInHands = false;
-                    ballFlying = true;
                     t0 = 0;
                     num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
-                    chanceForBar = GameObject.Find("Chance_Bar").GetComponent<Bar>().chance;
 
-                    StartCoroutine(Active_bar());
+                    chanceForBar = GameObject.Find("Chance_Bar").GetComponent<Bar>().chance;
+                    if (chanceForBar > 100 && chanceForBar <= 105) {
+                        chanceForBar = 110;
+                    }
+                    else if (chanceForBar > 105) {
+                        chanceForBar = 35;
+                    }
+
+                    Debug.Log("Число: " + num);
+                    Debug.Log("Шанс шкалы: " + chanceForBar);
+
+                    ballInHands = false;
+                    ballFlying = true;
                 }
             }
 
             if (ballFlying && !ballStart) {
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = chanceForBar;
                 ThrowFunction();
             }
         }
@@ -209,6 +219,7 @@ public class Player : MonoBehaviour {
 
     private void ThrowFunction() {
         if (SuperPoint && ThreePoint && TwoPoint) { //При броске находится в средней зоне
+            Debug.Log("Итоговый шанс: " + (currentPercentage2Point * chanceForBar) / 100);
             if (num <= (currentPercentage2Point * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 2;
@@ -216,6 +227,7 @@ public class Player : MonoBehaviour {
         }
 
         if (SuperPoint && ThreePoint && !TwoPoint) { //При броске находится в дальней зоне
+            Debug.Log("Итоговый шанс: " + (currentPercentage3Points * chanceForBar) / 100);
             if (num <= (currentPercentage3Points * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 3;
@@ -223,6 +235,7 @@ public class Player : MonoBehaviour {
         }
 
         if (SuperPoint && !ThreePoint && !TwoPoint) { //При броске находится в сверх дальней зоне
+            Debug.Log("Итоговый шанс: " + (currentPercentageExtraLong * chanceForBar) / 100);
             if (num <= (currentPercentageExtraLong * chanceForBar) / 100) {
                 isHit = true;
                 pnt = 4;
@@ -257,6 +270,8 @@ public class Player : MonoBehaviour {
                 }
 
                 numberBalls += 1;
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+                GOBar.gameObject.SetActive(false);
 
                 SaveScript.SaveGame(); //Сохранение очков и мячей после попадания
             }
@@ -277,6 +292,8 @@ public class Player : MonoBehaviour {
             if (time >= 1) {
                 ballFlying = false;
                 ball.GetComponent<Rigidbody>().isKinematic = false;
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+                GOBar.gameObject.SetActive(false);
             }
         }
     }
@@ -293,6 +310,9 @@ public class Player : MonoBehaviour {
 
         if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
             Ban = true;
+
+            GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            GOBar.gameObject.SetActive(false);
         }
 
         if (other.gameObject.tag == "2 Point") {
@@ -319,6 +339,9 @@ public class Player : MonoBehaviour {
 
         if (other.gameObject.tag == "Extra long") {
             Ban = true;
+
+            GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            GOBar.gameObject.SetActive(false);
         }
 
         if (other.gameObject.tag == "DeadZones") {
@@ -332,10 +355,5 @@ public class Player : MonoBehaviour {
 
     public void ButtonDown() {
         ButtonDownB = true;
-    }
-
-    IEnumerator Active_bar() {
-        yield return new WaitForSeconds(barDelayTime);
-        GOBar.gameObject.SetActive(false);
     }
 }

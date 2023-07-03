@@ -9,12 +9,8 @@ public class SaveAndLoad : MonoBehaviour {
     public int numberBalls_S;
 
     public void SaveGame() {
-        GameObject GO = GameObject.Find("Player");
-        Player player_point = GO.GetComponent<Player>();
-        point_S = player_point.point;
-
-        Player player_balls = GO.GetComponent<Player>();
-        numberBalls_S = player_balls.numberBalls;
+        point_S = GameObject.Find("Player").GetComponent<Player>().point;
+        numberBalls_S = GameObject.Find("Player").GetComponent<Player>().numberBalls;
 
         PlayerPrefs.SetInt("Points", point_S);
         PlayerPrefs.SetInt("Ball", numberBalls_S);
