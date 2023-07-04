@@ -33,6 +33,7 @@ public class Player : MonoBehaviour {
     private bool ballFlying = false; //Мяч летит (Не в руках)
     private bool ballStart = true; //Мяч при старте
     private bool Ban = false; //Запрет на бросок
+    private bool Ban2 = false; //Запрет на бросок 2
     private float t0 = 0;
 
     [SerializeField] private double currentPercentage2Point = 70; //Текущие значения процентов
@@ -62,12 +63,11 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private Joystick joystick;
 
-    private bool ButtonUpB = false;
-    private bool ButtonDownB = false;
+    public bool ButtonUpB = false;
+    public bool ButtonDownB = false;
 
     [SerializeField] private GameObject canvasControlPhone;
     [SerializeField] private GameObject GOBar;
-    [SerializeField] private float barDelayTime = 1.5f;
 
     private void Start() {
         GOBar.gameObject.SetActive(false);
@@ -104,13 +104,13 @@ public class Player : MonoBehaviour {
                 ballStart = false;
                 pnt = 0;
 
-                if (Input.GetKey(KeyCode.Space) && !Ban) {
+                if (Input.GetKey(KeyCode.Space) && !Ban && !Ban2) {
                     GOBar.gameObject.SetActive(true);
                     ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
 
-                    transform.LookAt(target.position);
+                    transform.LookAt(target.position); //Поворот к кольцу
                     transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
                 }
                 else {
@@ -119,7 +119,7 @@ public class Player : MonoBehaviour {
                     rightHand.localEulerAngles = Vector3.left * 50;
                 }
 
-                if (Input.GetKeyUp(KeyCode.Space) && !Ban && !ballFlying) {
+                if (Input.GetKeyUp(KeyCode.Space) && !Ban && !Ban2 && !ballFlying) {
                     rightHand.localEulerAngles = Vector3.left * 0;
                     t0 = 0;
                     num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
@@ -157,7 +157,8 @@ public class Player : MonoBehaviour {
                 ballStart = false;
                 pnt = 0;
 
-                if (ButtonDownB && !Ban) {
+                if (ButtonDownB && !Ban && !Ban2) {
+                    GOBar.gameObject.SetActive(true);
                     ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                     rightHand.localEulerAngles = Vector3.left * 0;
                     hands.localEulerAngles = Vector3.right * 180;
@@ -172,17 +173,28 @@ public class Player : MonoBehaviour {
                     ButtonDownB = false;
                 }
 
-                if (ButtonUpB && !Ban) {
-                    ButtonDownB = false;
-
+                if (ButtonUpB && !Ban && !Ban2 && !ballFlying) {
                     hands.localEulerAngles = Vector3.right * 0;
                     rightHand.localEulerAngles = Vector3.left * 0;
-                    ballInHands = false;
-                    ballFlying = true;
+
                     t0 = 0;
                     num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
                     mss = Random.Range(1, 7); //Определяет, куда попадет промах
 
+                    chanceForBar = GameObject.Find("Chance_Bar").GetComponent<Bar>().chance;
+                    if (chanceForBar > 100 && chanceForBar <= 105) {
+                        chanceForBar = 110;
+                    }
+                    else if (chanceForBar > 105) {
+                        chanceForBar = 35;
+                    }
+
+                    Debug.Log("Число: " + num);
+                    Debug.Log("Шанс шкалы: " + chanceForBar);
+
+                    ButtonDownB = false;
+                    ballInHands = false;
+                    ballFlying = true;
                     ButtonUpB = false;
                 }
                 else {
@@ -195,6 +207,7 @@ public class Player : MonoBehaviour {
             }
 
             if (ballFlying && !ballStart) {
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = chanceForBar;
                 ThrowFunction();
             }
         }
@@ -309,9 +322,11 @@ public class Player : MonoBehaviour {
         }
 
         if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
-            Ban = true;
+            Ban2 = true;
 
-            GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            if (GOBar.gameObject.activeInHierarchy) { //Если шкала активна на сцене
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            }
             GOBar.gameObject.SetActive(false);
         }
 
@@ -340,12 +355,14 @@ public class Player : MonoBehaviour {
         if (other.gameObject.tag == "Extra long") {
             Ban = true;
 
-            GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            if (GOBar.gameObject.activeInHierarchy) { //Если шкала активна на сцене
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+            }
             GOBar.gameObject.SetActive(false);
         }
 
         if (other.gameObject.tag == "DeadZones") {
-            Ban = false;
+            Ban2 = false;
         }
     }
 
