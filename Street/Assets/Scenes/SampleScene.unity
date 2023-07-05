@@ -1519,6 +1519,12 @@ MonoBehaviour:
   isPC: 1
   isPhone: 0
   speed: 11
+  currentPercentage2Point: 70
+  currentPercentage3Points: 60
+  currentPercentageExtraLong: 50
+  startPercentage2Point: 70
+  startPercentage3Points: 60
+  startPercentageExtraLong: 50
   player: {fileID: 808039256}
   ball: {fileID: 264182919}
   hands: {fileID: 1388219431}
@@ -1526,6 +1532,13 @@ MonoBehaviour:
   posOverHead: {fileID: 1199952637}
   posDribble: {fileID: 751531921}
   target: {fileID: 1780305961}
+  Misses:
+  - {fileID: 1604421596}
+  - {fileID: 1202186646}
+  - {fileID: 1424464401}
+  - {fileID: 1019513897}
+  - {fileID: 1532520643}
+  - {fileID: 113422900}
   miss1: {fileID: 1604421596}
   miss2: {fileID: 1202186646}
   miss3: {fileID: 1424464401}
@@ -1534,29 +1547,16 @@ MonoBehaviour:
   miss6: {fileID: 113422900}
   teleportPosition: {fileID: 1373609561}
   PositionBall: {fileID: 1767459076}
-  Misses:
-  - {fileID: 1604421596}
-  - {fileID: 1202186646}
-  - {fileID: 1424464401}
-  - {fileID: 1019513897}
-  - {fileID: 1532520643}
-  - {fileID: 113422900}
-  currentPercentage2Point: 70
-  currentPercentage3Points: 60
-  currentPercentageExtraLong: 50
-  startPercentage2Point: 70
-  startPercentage3Points: 60
-  startPercentageExtraLong: 50
+  canvasControlPhone: {fileID: 1975194133}
+  GOBar: {fileID: 613875845}
+  ButtonUpB: 0
+  ButtonDownB: 0
   point: 0
   numberBalls: 0
   pointDisplay: {fileID: 31814122}
   ballDisplay: {fileID: 1503228251}
-  SaveScript: {fileID: 1741675369}
   joystick: {fileID: 1204581719}
-  ButtonUpB: 0
-  ButtonDownB: 0
-  canvasControlPhone: {fileID: 1975194133}
-  GOBar: {fileID: 613875845}
+  SaveScript: {fileID: 1741675369}
 --- !u!1001 &820579158
 PrefabInstance:
   m_ObjectHideFlags: 0
