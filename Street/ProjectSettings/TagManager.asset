@@ -11,6 +11,7 @@ TagManager:
   - 3 Point
   - DeadZones
   - Green
+  - Limits
   layers:
   - Default
   - TransparentFX
