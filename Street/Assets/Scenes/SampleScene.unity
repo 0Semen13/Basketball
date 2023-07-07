@@ -1522,6 +1522,12 @@ MonoBehaviour:
   currentPercentage2Point: 70
   currentPercentage3Points: 60
   currentPercentageExtraLong: 50
+  startPercentage2Point: 70
+  startPercentage3Points: 60
+  startPercentageExtraLong: 50
+  increasingMainZone: 0
+  increasingMiddleZone: 0
+  increasingLastZone: 0
   player: {fileID: 808039256}
   ball: {fileID: 264182919}
   hands: {fileID: 1388219431}
@@ -1540,6 +1546,7 @@ MonoBehaviour:
   positionBall: {fileID: 1767459076}
   canvasControlPhone: {fileID: 1975194133}
   GOBar: {fileID: 613875845}
+  firstStart: 1
   buttonUpB: 0
   buttonDownB: 0
   point: 0
@@ -2583,6 +2590,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   point_S: 0
   numberBalls_S: 0
+  percentage2Point_S: 0
+  percentage3Point_S: 0
+  percentageExtraLong_S: 0
 --- !u!4 &1741675370
 Transform:
   m_ObjectHideFlags: 0
