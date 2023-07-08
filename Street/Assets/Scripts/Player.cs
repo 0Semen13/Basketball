@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : MonoBehaviour {
+    [Header("Режимы игры")]
     [SerializeField] private bool developerMode;
     [SerializeField] private bool isPC;
     [SerializeField] private bool isPhone;
 
+    [Header("Характристики игрока")]
     [SerializeField] private float speed; //Скорость
     [SerializeField] public double currentPercentage2Point; //Текущие значения процентов
     [SerializeField] public double currentPercentage3Points;
@@ -16,11 +19,12 @@ public class Player : MonoBehaviour {
     [SerializeField] private double startPercentage2Point = 70; //Стартовые значения процентов
     [SerializeField] private double startPercentage3Points = 60;
     [SerializeField] private double startPercentageExtraLong = 50;
-    [SerializeField] private double increasingMainZone = 0.5;
+    [SerializeField] private double increasingMainZone = 0.5; //Добавочные значения
     [SerializeField] private double increasingMiddleZone = 0.25;
     [SerializeField] private double increasingLastZone = 0.1;
     private float chanceForBar;
 
+    [Header("Объекты")]
     [SerializeField] private Transform player; //Игрок
     [SerializeField] private Transform ball; //Мяч
     [SerializeField] private Transform hands; //Руки
@@ -42,14 +46,17 @@ public class Player : MonoBehaviour {
     private bool ban2 = false; //Запрет на бросок из мертвой зоны
     private float t0 = 0;
 
-    private bool twoPoint = false;
+    private bool twoPoint = false; //Флаги показывающий, в какой зоне находится игрок
     private bool threePoint = false;
     private bool superPoint = true;
     private bool isHit = false;
     private int hitSuperPoint = 0;
 
-    public bool buttonUpB = false;
+    public bool buttonUpB = false; //Флаги, показывающие, нажата ли кнопка или нет
     public bool buttonDownB = false;
+
+    private float ballHeightFactor; //Коэффициенты времени и высоты полета мяча
+    private float ballTimeRatio;
 
     private int num = 0; //Число, сравниваемое с вероятностью
     private int pnt = 0; //Число, сколько очков должно добавиться после попадания
@@ -58,12 +65,13 @@ public class Player : MonoBehaviour {
     public int point; //Забитые очки
     public int numberBalls; //Забитые мячи
 
+    [Header("Элементы UI")]
     [SerializeField] private Text pointDisplay;
     [SerializeField] private Text ballDisplay;
 
     [SerializeField] private Joystick joystick;
 
-    [SerializeField] private SaveAndLoad SaveScript; //Объект со скриптом сохранения и загрузки
+    private SaveAndLoad SaveScript; //Объект со скриптом сохранения и загрузки
 
     private Rigidbody rigidBody;
 
@@ -92,7 +100,6 @@ public class Player : MonoBehaviour {
         currentPercentage2Point = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentage2Point_S;
         currentPercentage3Points = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentage3Point_S;
         currentPercentageExtraLong = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentageExtraLong_S;
-        Debug.Log(currentPercentage2Point + "  " + currentPercentage3Points + "  " + currentPercentageExtraLong);
 
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
@@ -146,13 +153,13 @@ public class Player : MonoBehaviour {
 
                 t0 = 0;
                 num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
-                mss = Random.Range(1, 7); //Определяет, куда попадет промах
+                mss = Random.Range(1, 7); //Определяет, в какой промах попадет
 
                 chanceForBar = GameObject.Find("Chance_Bar").GetComponent<Bar>().chance;
-                if (chanceForBar > 100 && chanceForBar <= 105) {
-                    chanceForBar = 110;
+                if (chanceForBar > 100 && chanceForBar <= 110) {
+                    chanceForBar = 115;
                 }
-                else if (chanceForBar > 105) {
+                else if (chanceForBar > 110) {
                     chanceForBar = 35;
                 }
 
@@ -182,7 +189,7 @@ public class Player : MonoBehaviour {
                 ball.GetComponent<Rigidbody>().isKinematic = true;
             }
 
-            if (Input.GetKey(KeyCode.F2)) { //Обнуление данных
+            if (Input.GetKey(KeyCode.F2)) { //Обнуление всех данных
                 SaveScript.ResetData();
                 point = 0;
                 numberBalls = 0;
@@ -193,11 +200,6 @@ public class Player : MonoBehaviour {
                 currentPercentage3Points = startPercentage3Points;
                 currentPercentageExtraLong = startPercentageExtraLong;
                 SaveScript.SaveGame();
-            }
-
-            if (Input.GetKey(KeyCode.F4)) { //Сброс для первого захода
-                firstStart = 0;
-                PlayerPrefs.SetInt("firstStart", firstStart);
             }
         }
 
@@ -211,6 +213,8 @@ public class Player : MonoBehaviour {
                 isHit = true;
                 pnt = 2;
             }
+            ballHeightFactor = 3.5f;
+            ballTimeRatio = 0.38f;
         }
 
         if (superPoint && threePoint && !twoPoint) { //При броске находится в дальней зоне
@@ -218,6 +222,8 @@ public class Player : MonoBehaviour {
                 isHit = true;
                 pnt = 3;
             }
+            ballHeightFactor = 4.8f;
+            ballTimeRatio = 0.44f;
         }
 
         if (superPoint && !threePoint && !twoPoint) { //При броске находится в сверх дальней зоне
@@ -228,17 +234,19 @@ public class Player : MonoBehaviour {
             else {
                 hitSuperPoint = 0;
             }
+            ballHeightFactor = 6;
+            ballTimeRatio = 0.51f;
         }
 
         if (isHit) { //Попал в кольцо
             t0 += Time.deltaTime;
-            float duration = 0.5f; //Длительность
+            float duration = ballTimeRatio; //Длительность
             float time = t0 / duration; //Время полета
 
             Vector3 A = posOverHead.position;
             Vector3 B = target.position;
             Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-            Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+            Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
             ball.position = posFly + arc;
 
             ball.Rotate(Random.Range(-1f, -0.55f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
@@ -268,7 +276,6 @@ public class Player : MonoBehaviour {
                     currentPercentageExtraLong += increasingMainZone;
                 }
 
-                Debug.Log(currentPercentage2Point + "  " + currentPercentage3Points + "  " + currentPercentageExtraLong);
                 numberBalls += 1;
                 GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
                 GOBar.gameObject.SetActive(false);
@@ -278,13 +285,13 @@ public class Player : MonoBehaviour {
         }
         else {
             t0 += Time.deltaTime;
-            float duration = 0.5f; //Длительность
+            float duration = ballTimeRatio; //Длительность
             float time = t0 / duration; //Время полета
 
             Vector3 A = posOverHead.position;
             Vector3 B = Misses[mss - 1].position;
             Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
-            Vector3 arc = Vector3.up * 5 * Mathf.Sin(time * 3.14f);
+            Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
             ball.position = posFly + arc;
 
             ball.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f)); //Вращение мяча
