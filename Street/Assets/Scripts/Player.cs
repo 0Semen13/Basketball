@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : MonoBehaviour {
     [Header("Режимы игры")]
@@ -76,6 +72,10 @@ public class Player : MonoBehaviour {
     private Rigidbody rigidBody;
 
     private void Start() {
+        rigidBody = player.GetComponent<Rigidbody>();
+
+        SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
+
         firstStart = PlayerPrefs.GetInt("firstStart");
         if(firstStart == 0) {
             currentPercentage2Point = startPercentage2Point;
@@ -86,14 +86,11 @@ public class Player : MonoBehaviour {
             SaveScript.SaveGame(); //Сохранение данных
         }
 
-        rigidBody = GetComponent<Rigidbody>();
-
         GOBar.gameObject.SetActive(false);
 
         player.position = teleportPosition.position;
         ball.position = positionBall.position;
 
-        SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
         SaveScript.LoadGame(); //Загрузка данных
         point = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().point_S;
         numberBalls = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().numberBalls_S;

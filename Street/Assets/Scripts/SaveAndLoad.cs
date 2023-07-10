@@ -1,8 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
 using UnityEngine;
 
 public class SaveAndLoad : MonoBehaviour {
@@ -42,11 +37,14 @@ public class SaveAndLoad : MonoBehaviour {
         numberBalls_S = PlayerPrefs.GetInt("Ball");
 
         p2Point_STR = PlayerPrefs.GetString("Percentage2Point");
-        percentage2Point_S = Convert.ToDouble(p2Point_STR);
+        percentage2Point_S = double.Parse(p2Point_STR, System.Globalization.CultureInfo.InvariantCulture);
+        //percentage2Point_S = Convert.ToDouble(p2Point_STR);
         p3Point_STR = PlayerPrefs.GetString("Percentage3Point");
-        percentage3Point_S = Convert.ToDouble(p3Point_STR);
+        //percentage3Point_S = Convert.ToDouble(p3Point_STR);
+        percentage3Point_S = double.Parse(p3Point_STR, System.Globalization.CultureInfo.InvariantCulture);
         pExtraLong_STR = PlayerPrefs.GetString("PercentageExtraLong");
-        percentageExtraLong_S = Convert.ToDouble(pExtraLong_STR);
+        //percentageExtraLong_S = Convert.ToDouble(pExtraLong_STR);
+        percentageExtraLong_S = double.Parse(pExtraLong_STR, System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public void ResetData() {
