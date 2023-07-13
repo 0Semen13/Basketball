@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private double increasingMiddleZone = 0.25;
     [SerializeField] private double increasingLastZone = 0.1;
     private float chanceForBar;
+    public float chanceSpeedForSave;
 
     [Header("Объекты")]
     [SerializeField] private Transform player; //Игрок
@@ -60,6 +61,7 @@ public class Player : MonoBehaviour {
 
     public int point; //Забитые очки
     public int numberBalls; //Забитые мячи
+    public int addingPoints; //Очки, после которых ускоряется шкала вероятности
 
     [Header("Элементы UI")]
     [SerializeField] private Text pointDisplay;
@@ -77,26 +79,33 @@ public class Player : MonoBehaviour {
         SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
 
         firstStart = PlayerPrefs.GetInt("firstStart");
-        if(firstStart == 0) {
+        if(firstStart == 0) { //Первый заход в игру
             currentPercentage2Point = startPercentage2Point;
             currentPercentage3Points = startPercentage3Points;
             currentPercentageExtraLong = startPercentageExtraLong;
+            addingPoints = 50;
+            GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed = 0.6f;
+            chanceSpeedForSave = GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed;
             firstStart = 1;
-            PlayerPrefs.SetInt("firstStart", firstStart);
+
             SaveScript.SaveGame(); //Сохранение данных
         }
-
-        GOBar.gameObject.SetActive(false);
-
-        player.position = teleportPosition.position;
-        ball.position = positionBall.position;
 
         SaveScript.LoadGame(); //Загрузка данных
         point = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().point_S;
         numberBalls = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().numberBalls_S;
+
         currentPercentage2Point = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentage2Point_S;
         currentPercentage3Points = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentage3Point_S;
         currentPercentageExtraLong = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().percentageExtraLong_S;
+
+        addingPoints = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().addingPoints_S;
+        GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().chanceSpeed_S;
+        chanceSpeedForSave = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>().chanceSpeed_S;
+
+        GOBar.gameObject.SetActive(false);
+        player.position = teleportPosition.position;
+        ball.position = positionBall.position;
 
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
@@ -210,8 +219,8 @@ public class Player : MonoBehaviour {
                 isHit = true;
                 pnt = 2;
             }
-            ballHeightFactor = 3.5f;
-            ballTimeRatio = 0.38f;
+            ballHeightFactor = 3.6f;
+            ballTimeRatio = 0.41f;
         }
 
         if (superPoint && threePoint && !twoPoint) { //При броске находится в дальней зоне
@@ -220,7 +229,7 @@ public class Player : MonoBehaviour {
                 pnt = 3;
             }
             ballHeightFactor = 4.8f;
-            ballTimeRatio = 0.44f;
+            ballTimeRatio = 0.46f;
         }
 
         if (superPoint && !threePoint && !twoPoint) { //При броске находится в сверх дальней зоне
@@ -231,8 +240,8 @@ public class Player : MonoBehaviour {
             else {
                 hitSuperPoint = 0;
             }
-            ballHeightFactor = 6;
-            ballTimeRatio = 0.51f;
+            ballHeightFactor = 6.2f;
+            ballTimeRatio = 0.55f;
         }
 
         if (isHit) { //Попал в кольцо
@@ -275,6 +284,14 @@ public class Player : MonoBehaviour {
 
                 numberBalls += 1;
                 GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+
+                if(point >= addingPoints) {
+                    addingPoints += 50;
+                    if(GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed <= GameObject.Find("Chance_Bar").GetComponent<Bar>().maxChanceSpeed) {
+                        GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed += 0; //point / 500000f;
+                        chanceSpeedForSave = GameObject.Find("Chance_Bar").GetComponent<Bar>().chanceSpeed;
+                    }
+                }
                 GOBar.gameObject.SetActive(false);
 
                 SaveScript.SaveGame(); //Сохранение данных
