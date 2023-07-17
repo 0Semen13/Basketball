@@ -18,9 +18,7 @@ public class Bar : MonoBehaviour {
         chance = 0f;
     }
 
-    void FixedUpdate() {
-        chanceBar.fillAmount = chance / maxChance;
-            
+    void FixedUpdate() {          
         if (Input.GetKey(KeyCode.Space) || buttonDown) {
             if (flagVsBarRepet == 0) {
                 if (chance < 105) {
@@ -38,6 +36,8 @@ public class Bar : MonoBehaviour {
             flagVsBarRepet = 0;
             buttonUp = false;
         }
+
+        chanceBar.fillAmount = chance / maxChance;
     }
 
     public void ButtonUp() {

@@ -16,21 +16,33 @@ public class SaveAndLoad : MonoBehaviour {
     public int addingPoints_S;
     public float chanceSpeed_S;
 
-    public void SaveGame() {
-        point_S = GameObject.Find("Player").GetComponent<Player>().point;
-        numberBalls_S = GameObject.Find("Player").GetComponent<Player>().numberBalls;
+    private bool flagReceiveScript;
+    private Player PlayerScript;
 
-        percentage2Point_S = GameObject.Find("Player").GetComponent<Player>().currentPercentage2Point;
+    void Start () {
+        flagReceiveScript = true;
+    }
+
+    public void SaveGame() {
+        if (flagReceiveScript) {
+            PlayerScript = GameObject.Find("Player").GetComponent<Player>();
+            flagReceiveScript = false;
+        }
+
+        point_S = PlayerScript.point;
+        numberBalls_S = PlayerScript.numberBalls;
+
+        percentage2Point_S = PlayerScript.currentPercentage2Point;
         p2Point_STR = percentage2Point_S.ToString();
-        percentage3Point_S = GameObject.Find("Player").GetComponent<Player>().currentPercentage3Points;
+        percentage3Point_S = PlayerScript.currentPercentage3Points;
         p3Point_STR = percentage3Point_S.ToString();
-        percentageExtraLong_S = GameObject.Find("Player").GetComponent<Player>().currentPercentageExtraLong;
+        percentageExtraLong_S = PlayerScript.currentPercentageExtraLong;
         pExtraLong_STR = percentageExtraLong_S.ToString();
 
-        firstStart_S = GameObject.Find("Player").GetComponent<Player>().firstStart;
+        firstStart_S = PlayerScript.firstStart;
 
-        addingPoints_S = GameObject.Find("Player").GetComponent<Player>().addingPoints;
-        chanceSpeed_S = GameObject.Find("Player").GetComponent<Player>().chanceSpeedForSave;
+        addingPoints_S = PlayerScript.addingPoints;
+        chanceSpeed_S = PlayerScript.chanceSpeedForSave;
 
         PlayerPrefs.SetInt("Points", point_S);
         PlayerPrefs.SetInt("Ball", numberBalls_S);
