@@ -32,6 +32,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform[] Misses; //Массив точек промаха
     [SerializeField] private Transform teleportPosition; //Позиция телепорта
     [SerializeField] private Transform positionBall;
+    [SerializeField] private GameObject FPSLimitation;
 
     public int firstStart = 0;
     private bool ballInHands = false; //Мяч в руках
@@ -115,15 +116,16 @@ public class Player : MonoBehaviour {
 
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
+            FPSLimitation.gameObject.SetActive(false);
         }
         else if (!isPC && isPhone) {
             canvasControlPhone.gameObject.SetActive(true);
+            FPSLimitation.gameObject.SetActive(true);
         }
     }
 
     void FixedUpdate() {
         Vector3 direction = new Vector3(0, 0, 0);
-        rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
         if (isPC) {
             direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -161,6 +163,7 @@ public class Player : MonoBehaviour {
             }
 
             if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !ban && !ban2 && !ballFlying) {
+                rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
                 hands.localEulerAngles = Vector3.right * 0;
                 rightHand.localEulerAngles = Vector3.left * 0;
 
@@ -334,10 +337,6 @@ public class Player : MonoBehaviour {
             rigidBodyBall.isKinematic = true;
         }
 
-        if (other.gameObject.tag == "Limits") { //Выход за пределы площадки
-            player.position = teleportPosition.position;
-        }
-
         if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
             ban2 = true;
 
@@ -378,6 +377,11 @@ public class Player : MonoBehaviour {
 
         if (other.gameObject.tag == "DeadZones") {
             ban2 = false;
+        }
+
+        if (other.gameObject.tag == "Limits") { //Выход за пределы площадки
+            player.position = teleportPosition.position;
+            Debug.Log("Телепорт за пределов!");
         }
     }
 

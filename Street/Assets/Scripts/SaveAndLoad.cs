@@ -16,18 +16,10 @@ public class SaveAndLoad : MonoBehaviour {
     public int addingPoints_S;
     public float chanceSpeed_S;
 
-    private bool flagReceiveScript;
     private Player PlayerScript;
 
-    void Start () {
-        flagReceiveScript = true;
-    }
-
     public void SaveGame() {
-        if (flagReceiveScript) {
-            PlayerScript = GameObject.Find("Player").GetComponent<Player>();
-            flagReceiveScript = false;
-        }
+        PlayerScript = GameObject.Find("Player").GetComponent<Player>();
 
         point_S = PlayerScript.point;
         numberBalls_S = PlayerScript.numberBalls;
