@@ -48,8 +48,8 @@ public class Player : MonoBehaviour {
     private bool isHit = false;
     private int hitSuperPoint = 0;
 
-    public bool buttonUpB = false; //Флаги, показывающие, нажата ли кнопка или нет
-    public bool buttonDownB = false;
+    private bool buttonUpB = false; //Флаги, показывающие, нажата ли кнопка или нет
+    private bool buttonDownB = false;
 
     private float ballHeightFactor; //Коэффициенты времени и высоты полета мяча
     private float ballTimeRatio;
@@ -67,10 +67,8 @@ public class Player : MonoBehaviour {
     [SerializeField] private Text ballDisplay;
     [SerializeField] private Joystick joystick;
     [SerializeField] private GameObject canvasControlPhone;
-    [SerializeField] private GameObject backBar;
-    [SerializeField] private GameObject foreBar;
+    [SerializeField] private GameObject GOBar;
 
-    private Image imgBackBar, imgForeBar;
     private SaveAndLoad SaveScript; //Объекты для кеширования
     private Bar BarScript;
     private Rigidbody rigidBody;
@@ -79,8 +77,6 @@ public class Player : MonoBehaviour {
     private void Start() {
         rigidBody = player.GetComponent<Rigidbody>();
         rigidBodyBall = ball.GetComponent<Rigidbody>();
-        imgBackBar = backBar.GetComponent<Image>();
-        imgForeBar = foreBar.GetComponent<Image>();
         SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
         BarScript = GameObject.Find("Chance_Bar").GetComponent<Bar>();
 
@@ -104,15 +100,16 @@ public class Player : MonoBehaviour {
         addingPoints = SaveScript.addingPoints_S;
         BarScript.chanceSpeed = SaveScript.chanceSpeed_S;
         chanceSpeedForSave = SaveScript.chanceSpeed_S;
+
         point = SaveScript.point_S;
         numberBalls = SaveScript.numberBalls_S;
-        imgBackBar.enabled = false;
-        imgForeBar.enabled = false;
+        pointDisplay.text = "Points: " + point.ToString();
+        ballDisplay.text = "Balls: " + numberBalls.ToString();
+
         player.position = teleportPosition.position;
         ball.position = positionBall.position;
 
-        pointDisplay.text = point.ToString();
-        ballDisplay.text = numberBalls.ToString();
+        GOBar.gameObject.SetActive(false);
 
         if (isPC && !isPhone) {
             canvasControlPhone.gameObject.SetActive(false);
@@ -145,8 +142,7 @@ public class Player : MonoBehaviour {
 
             if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !ban && !ban2) {
                 rigidBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                imgBackBar.enabled = true;
-                imgForeBar.enabled = true;
+                GOBar.gameObject.SetActive(true);
                 ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
                 rightHand.localEulerAngles = Vector3.left * 0;
                 hands.localEulerAngles = Vector3.right * 180;
@@ -209,6 +205,8 @@ public class Player : MonoBehaviour {
                 SaveScript.ResetData();
                 point = 0;
                 numberBalls = 0;
+                pointDisplay.text = "Points: " + point.ToString();
+                ballDisplay.text = "Balls: " + numberBalls.ToString();
             }
 
             if (Input.GetKey(KeyCode.F3)) { //Обнуление характеристик
@@ -299,11 +297,10 @@ public class Player : MonoBehaviour {
                         chanceSpeedForSave = BarScript.chanceSpeed;
                     }
                 }
-                imgBackBar.enabled = false;
-                imgForeBar.enabled = false;
+                GOBar.gameObject.SetActive(false);
 
-                pointDisplay.text = point.ToString();
-                ballDisplay.text = numberBalls.ToString();
+                pointDisplay.text = "Points: " + point.ToString();
+                ballDisplay.text = "Balls: " + numberBalls.ToString();
 
                 SaveScript.SaveGame(); //Сохранение данных
             }
@@ -325,8 +322,7 @@ public class Player : MonoBehaviour {
                 ballFlying = false;
                 rigidBodyBall.isKinematic = false;
                 BarScript.chance = 0;
-                imgBackBar.enabled = false;
-                imgForeBar.enabled = false;
+                GOBar.gameObject.SetActive(false);
             }
         }
     }
@@ -340,9 +336,10 @@ public class Player : MonoBehaviour {
         if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
             ban2 = true;
 
-            BarScript.chance = 0;
-            imgBackBar.enabled = false;
-            imgForeBar.enabled = false;
+            if (GOBar.gameObject.activeInHierarchy) {
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+                GOBar.gameObject.SetActive(false);
+            }
         }
 
         if (other.gameObject.tag == "2 Point") {
@@ -370,9 +367,10 @@ public class Player : MonoBehaviour {
         if (other.gameObject.tag == "Extra long") {
             ban = true;
 
-            BarScript.chance = 0;
-            imgBackBar.enabled = false;
-            imgForeBar.enabled = false;
+            if (GOBar.gameObject.activeInHierarchy) {
+                GameObject.Find("Chance_Bar").GetComponent<Bar>().chance = 0;
+                GOBar.gameObject.SetActive(false);
+            }
         }
 
         if (other.gameObject.tag == "DeadZones") {
