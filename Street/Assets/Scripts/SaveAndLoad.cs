@@ -11,8 +11,6 @@ public class SaveAndLoad : MonoBehaviour {
     public double percentageExtraLong_S;
     private string pExtraLong_STR;
 
-    public int firstStart_S;
-
     public int addingPoints_S;
     public float chanceSpeed_S;
 
@@ -22,30 +20,25 @@ public class SaveAndLoad : MonoBehaviour {
         PlayerScript = GameObject.Find("Player").GetComponent<Player>();
 
         point_S = PlayerScript.point;
+        PlayerPrefs.SetInt("Points", point_S);
         numberBalls_S = PlayerScript.numberBalls;
+        PlayerPrefs.SetInt("Ball", numberBalls_S);
 
         percentage2Point_S = PlayerScript.currentPercentage2Point;
         p2Point_STR = percentage2Point_S.ToString();
+        PlayerPrefs.SetString("Percentage2Point", p2Point_STR);
+
         percentage3Point_S = PlayerScript.currentPercentage3Points;
         p3Point_STR = percentage3Point_S.ToString();
+        PlayerPrefs.SetString("Percentage3Point", p3Point_STR);
+
         percentageExtraLong_S = PlayerScript.currentPercentageExtraLong;
         pExtraLong_STR = percentageExtraLong_S.ToString();
-
-        firstStart_S = PlayerScript.firstStart;
-
-        addingPoints_S = PlayerScript.addingPoints;
-        chanceSpeed_S = PlayerScript.chanceSpeedForSave;
-
-        PlayerPrefs.SetInt("Points", point_S);
-        PlayerPrefs.SetInt("Ball", numberBalls_S);
-
-        PlayerPrefs.SetString("Percentage2Point", p2Point_STR);
-        PlayerPrefs.SetString("Percentage3Point", p3Point_STR);
         PlayerPrefs.SetString("PercentageExtraLong", pExtraLong_STR);
 
-        PlayerPrefs.SetInt("firstStart", firstStart_S);
-
+        addingPoints_S = PlayerScript.addingPoints;
         PlayerPrefs.SetInt("addingPoints", addingPoints_S);
+        chanceSpeed_S = PlayerScript.chanceSpeedForSave;
         PlayerPrefs.SetFloat("chanceSpeed", chanceSpeed_S);
 
         PlayerPrefs.Save();

@@ -8,7 +8,8 @@ public class Player : MonoBehaviour {
     [SerializeField] private bool isPhone;
 
     [Header("Характристики игрока")]
-    [SerializeField] private float speed; //Скорость
+    [SerializeField] private float speedWithTheBalled; //Скорость с мячом
+    [SerializeField] private float speedWithoutBall; //Скорость без мяча
     [SerializeField] public double currentPercentage2Point; //Текущие значения процентов
     [SerializeField] public double currentPercentage3Points;
     [SerializeField] public double currentPercentageExtraLong;
@@ -20,6 +21,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private double increasingLastZone = 0.1;
     private float chanceForBar;
     public float chanceSpeedForSave;
+    private float speed = 0;
 
     [Header("Объекты")]
     [SerializeField] private Transform player; //Игрок
@@ -35,7 +37,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private GameObject FPSLimitation;
     [SerializeField] private GameObject model;
 
-    public int firstStart = 0;
+    private int firstStart = 0;
     private bool ballInHands = false; //Мяч в руках
     private bool ballFlying = false; //Мяч летит (Не в руках)
     private bool ballStart = true; //Мяч при старте
@@ -72,19 +74,21 @@ public class Player : MonoBehaviour {
 
     private SaveAndLoad SaveScript; //Объекты для кеширования
     private Bar BarScript;
+    private Stamina StaminaScript;
     private Rigidbody rigidBody;
     private Rigidbody rigidBodyBall;
     private Animator animator;
 
     private void Start() {
-        rigidBody = player.GetComponent<Rigidbody>();
+        rigidBody = player.GetComponent<Rigidbody>(); //Получение rigidbody
         rigidBodyBall = ball.GetComponent<Rigidbody>();
-        SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скрипта для сохранения
+        SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скриптов
         BarScript = GameObject.Find("Chance_Bar").GetComponent<Bar>();
-        animator = model.GetComponent<Animator>();
+        StaminaScript = GameObject.Find("Stamina").GetComponent<Stamina>();
+        animator = model.GetComponent<Animator>(); //Получение аниматора
 
         firstStart = PlayerPrefs.GetInt("firstStart");
-        if(firstStart == 0) { //Первый заход в игру
+        if (firstStart == 0) { //Первый заход в игру
             currentPercentage2Point = startPercentage2Point;
             currentPercentage3Points = startPercentage3Points;
             currentPercentageExtraLong = startPercentageExtraLong;
@@ -92,6 +96,7 @@ public class Player : MonoBehaviour {
             BarScript.chanceSpeed = 0.8f;
             chanceSpeedForSave = BarScript.chanceSpeed;
             firstStart = 1;
+            PlayerPrefs.SetInt("firstStart", firstStart);
 
             SaveScript.SaveGame(); //Сохранение данных
         }
@@ -111,6 +116,8 @@ public class Player : MonoBehaviour {
 
         player.position = teleportPosition.position;
         ball.position = positionBall.position;
+
+        //speed = speedWithoutBall;
 
         GOBar.gameObject.SetActive(false);
 
@@ -146,57 +153,64 @@ public class Player : MonoBehaviour {
         player.LookAt(player.position + direction); //Поворот игрока
 
         if (ballInHands) {
+            speed = speedWithTheBalled;
             animator.SetBool("Ball", true);
             isHit = false;
             ballStart = false;
             pnt = 0;
 
-            if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !ban && !ban2) {
-                rigidBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                GOBar.gameObject.SetActive(true);
-                animator.SetFloat("Move", 0);
-                ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
-                //hands.localEulerAngles = Vector3.right * 180;
-                //rightHand.localEulerAngles = Vector3.left * 0;
+            if(StaminaScript.StaminaCheck() == 1) {
+                if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !ban && !ban2) {
+                    rigidBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+                    GOBar.gameObject.SetActive(true);
+                    animator.SetFloat("Move", 0);
+                    ball.position = posOverHead.position; //Поднятие рук и мяча при зажатом пробеле и мяче в руках
+                                                          //hands.localEulerAngles = Vector3.right * 180;
+                                                          //rightHand.localEulerAngles = Vector3.left * 0;
 
-                player.LookAt(target.position);
-                player.eulerAngles = new Vector3(0, player.eulerAngles.y, 0);
+                    player.LookAt(target.position);
+                    player.eulerAngles = new Vector3(0, player.eulerAngles.y, 0);
+                }
+                else {
+                    ball.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
+                    //hands.localEulerAngles = Vector3.right * 0;
+                    //rightHand.localEulerAngles = Vector3.left * 50;
+
+                    buttonDownB = false;
+                }
+
+                if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !ban && !ban2 && !ballFlying) {
+                    rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+                    //hands.localEulerAngles = Vector3.right * 0;
+                    //rightHand.localEulerAngles = Vector3.left * 0;
+
+                    t0 = 0;
+                    num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
+                    mss = Random.Range(1, 7); //Определяет, в какой промах попадет
+
+                    chanceForBar = BarScript.chance;
+                    if (chanceForBar > 100 && chanceForBar <= 110) {
+                        chanceForBar = 115;
+                    }
+                    else if (chanceForBar > 110) {
+                        chanceForBar = 35;
+                    }
+
+                    buttonDownB = false;
+                    ballInHands = false;
+                    ballFlying = true;
+                    buttonUpB = false;
+                }
+                else {
+                    buttonUpB = false;
+                }
             }
-            else {
+            else{
                 ball.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
-                //hands.localEulerAngles = Vector3.right * 0;
-                //rightHand.localEulerAngles = Vector3.left * 50;
-
-                buttonDownB = false;
-            }
-
-            if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !ban && !ban2 && !ballFlying) {
-                rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                //hands.localEulerAngles = Vector3.right * 0;
-                //rightHand.localEulerAngles = Vector3.left * 0;
-
-                t0 = 0;
-                num = Random.Range(1, 101); //Определяет число, для сравнения с вероятностью
-                mss = Random.Range(1, 7); //Определяет, в какой промах попадет
-
-                chanceForBar = BarScript.chance;
-                if (chanceForBar > 100 && chanceForBar <= 110) {
-                    chanceForBar = 115;
-                }
-                else if (chanceForBar > 110) {
-                    chanceForBar = 35;
-                }
-
-                buttonDownB = false;
-                ballInHands = false;
-                ballFlying = true;
-                buttonUpB = false;
-            }
-            else {
-                buttonUpB = false;
             }
         }
         else {
+            speed = speedWithoutBall;
             buttonDownB = false;
             buttonUpB = false;
         }
@@ -304,9 +318,9 @@ public class Player : MonoBehaviour {
                 numberBalls += 1;
                 BarScript.chance = 0;
 
-                if(point >= addingPoints) {
+                if (point >= addingPoints) {
                     addingPoints += 50;
-                    if(BarScript.chanceSpeed <= BarScript.maxChanceSpeed) {
+                    if (BarScript.chanceSpeed <= BarScript.maxChanceSpeed) {
                         BarScript.chanceSpeed += 0; //point / 500000f;
                         chanceSpeedForSave = BarScript.chanceSpeed;
                     }
@@ -316,6 +330,7 @@ public class Player : MonoBehaviour {
                 pointDisplay.text = "Points: " + point.ToString();
                 ballDisplay.text = "Balls: " + numberBalls.ToString();
 
+                StaminaScript.StaminaCalculation(); //Уменьшение стамины после броска
                 SaveScript.SaveGame(); //Сохранение данных
             }
         }
@@ -337,6 +352,8 @@ public class Player : MonoBehaviour {
                 rigidBodyBall.isKinematic = false;
                 BarScript.chance = 0;
                 GOBar.gameObject.SetActive(false);
+
+                StaminaScript.StaminaCalculation(); //Уменьшение стамины после броска
             }
         }
     }

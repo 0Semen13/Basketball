@@ -18,7 +18,7 @@ public class Bar : MonoBehaviour {
         chance = 0f;
     }
 
-    void FixedUpdate() {          
+    void FixedUpdate() {
         if (Input.GetKey(KeyCode.Space) || buttonDown) {
             if (flagVsBarRepet == 0) {
                 if (chance < 105) {
