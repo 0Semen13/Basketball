@@ -1435,7 +1435,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Hands/Hand Left
+    path: Thigh Right/Leg Right
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -1445,7 +1445,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Hands/Hand Left
+    path: Thigh Right/Leg Right
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -1455,7 +1455,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Hands/Hand Left
+    path: Thigh Right/Leg Right
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -1585,7 +1585,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Thigh Right/Leg Right
+    path: Hands/Hand Left
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -1595,7 +1595,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Thigh Right/Leg Right
+    path: Hands/Hand Left
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -1605,7 +1605,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Thigh Right/Leg Right
+    path: Hands/Hand Left
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

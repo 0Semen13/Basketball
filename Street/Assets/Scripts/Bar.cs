@@ -2,11 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Bar : MonoBehaviour {
-    private Image chanceBar;
+    [SerializeField] private Image chanceBar;
     private float maxChance = 100f;
-    public float maxChanceSpeed = 1.1f;
-    public float chanceSpeed;
+    public float maxChanceSpeed;
+    public float startChanceSpeed;
+    public float currentChanceSpeed;
     public float chance;
+    public float increasing_BarSpeed;
 
     private int flagVsBarRepet = 0; //Флаг, не начинающий бар с начала, пока кнопка не будет отпущена
 
@@ -14,7 +16,6 @@ public class Bar : MonoBehaviour {
     private bool buttonDown = false;
 
     void Start() {
-        chanceBar = GetComponent<Image>();
         chance = 0f;
     }
 
@@ -22,7 +23,7 @@ public class Bar : MonoBehaviour {
         if (Input.GetKey(KeyCode.Space) || buttonDown) {
             if (flagVsBarRepet == 0) {
                 if (chance < 105) {
-                    chance += chanceSpeed;
+                    chance += currentChanceSpeed;
                 }
 
                 if (chance > 105) {
@@ -35,6 +36,13 @@ public class Bar : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.Space) || buttonUp) {
             flagVsBarRepet = 0;
             buttonUp = false;
+
+            if (chance > 100 && chance <= 110) {
+                chance = 115;
+            }
+            else if (chance > 110) {
+                chance = 35;
+            }
         }
 
         chanceBar.fillAmount = chance / maxChance;

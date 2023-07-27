@@ -19,7 +19,6 @@ public class CameraController : MonoBehaviour
 
     void FixedUpdate() {
         rotation.z = Mathf.Sin(Time.time * speed) * amount;
-        //rotation.x = 34.5f + Mathf.Sin(Time.time * speed) * amount;
         rotation.y = Mathf.Cos(Time.time * speed) * amount;
         cameraT.localEulerAngles = cameraT.rotation * rotation;
 
