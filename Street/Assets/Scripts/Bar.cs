@@ -15,11 +15,11 @@ public class Bar : MonoBehaviour {
     private bool buttonUp = false;
     private bool buttonDown = false;
 
-    void Start() {
+    private void Start() {
         chance = 0f;
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
         if (Input.GetKey(KeyCode.Space) || buttonDown) {
             if (flagVsBarRepet == 0) {
                 if (chance < 105) {

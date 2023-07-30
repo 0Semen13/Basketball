@@ -7,7 +7,7 @@ public class FPSLimitation : MonoBehaviour {
     [SerializeField] private float TargetFrameRate = 120.0f;
     private float currentFrameTime;
 
-    void Awake() {
+    private void Awake() {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = MaxRate;
         currentFrameTime = Time.realtimeSinceStartup;

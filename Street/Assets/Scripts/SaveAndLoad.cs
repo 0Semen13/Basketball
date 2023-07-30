@@ -17,35 +17,6 @@ public class SaveAndLoad : MonoBehaviour {
     private Player PlayerScript;
     private Bar BarScript;
 
-    public void SaveGame() { //—охранение всех данных
-        BarScript = GameObject.Find("Bar").GetComponent<Bar>();
-        PlayerScript = GameObject.Find("Player").GetComponent<Player>();
-
-        point_S = PlayerScript.point;
-        PlayerPrefs.SetInt("Points", point_S);
-        numberBalls_S = PlayerScript.numberBalls;
-        PlayerPrefs.SetInt("Ball", numberBalls_S);
-
-        percentage2Point_S = PlayerScript.currentPercentage2Point;
-        p2Point_STR = percentage2Point_S.ToString();
-        PlayerPrefs.SetString("Percentage2Point", p2Point_STR);
-
-        percentage3Point_S = PlayerScript.currentPercentage3Points;
-        p3Point_STR = percentage3Point_S.ToString();
-        PlayerPrefs.SetString("Percentage3Point", p3Point_STR);
-
-        percentageExtraLong_S = PlayerScript.currentPercentageExtraLong;
-        pExtraLong_STR = percentageExtraLong_S.ToString();
-        PlayerPrefs.SetString("PercentageExtraLong", pExtraLong_STR);
-
-        addingPoints_S = PlayerScript.addingPoints;
-        PlayerPrefs.SetInt("addingPoints", addingPoints_S);
-        chanceSpeed_S = BarScript.currentChanceSpeed;
-        PlayerPrefs.SetFloat("chanceSpeed", chanceSpeed_S);
-
-        PlayerPrefs.Save();
-    }
-
     public void SaveCharacteristicsAndPoints() { //—охранение характеристик игрока, забитых очков и м€чей
         PlayerScript = GameObject.Find("Player").GetComponent<Player>();
 

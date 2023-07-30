@@ -1,15 +1,15 @@
 fileFormatVersion: 2
-guid: 2ff5403cad63d4342a6d96c722901f32
+guid: 0512512c9b67db743b85818b6c3b0ed5
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
-  fontSize: 16
+  fontSize: 300
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Technofosiano
+  - Fifaks 1.0 dev1
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

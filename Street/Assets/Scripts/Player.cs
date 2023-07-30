@@ -93,7 +93,9 @@ public class Player : MonoBehaviour {
             BarScript.currentChanceSpeed = BarScript.startChanceSpeed  ;
             firstStart = 1;
             PlayerPrefs.SetInt("firstStart", firstStart);
-            SaveScript.SaveGame(); //Сохранение данных
+            SaveScript.SaveCharacteristicsAndPoints(); //Сохранение данных
+            SaveScript.SaveAddingPoints();
+            SaveScript.SaveBarSpeed();
         }
 
         SaveScript.LoadGame(); //Загрузка данных
@@ -123,7 +125,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
         Vector3 direction = new Vector3(0, 0, 0);
 
         if (isPhone) direction = new Vector3(joystick.Horizontal, 0, joystick.Vertical);
@@ -140,13 +142,7 @@ public class Player : MonoBehaviour {
         player.LookAt(player.position + direction); //Поворот игрока
 
         if (ballInHands) {
-            speed = speedWithTheBalled;
-            animator.SetBool("Ball", true);
-            isHit = false;
-            ballStart = false;
-            pnt = 0;
-
-            if(StaminaScript.StaminaCheck() == 1) {
+            if (StaminaScript.StaminaCheck() == 1) {
                 if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !ban && !ban2) {
                     rigidBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
                     GOBar.gameObject.SetActive(true);
@@ -162,7 +158,22 @@ public class Player : MonoBehaviour {
 
                     buttonDownB = false;
                 }
+            }
+            else {
+                ball.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
+            }
+        }
+    }
 
+    private void Update() {
+        if (ballInHands) {
+            speed = speedWithTheBalled;
+            animator.SetBool("Ball", true);
+            isHit = false;
+            ballStart = false;
+            pnt = 0;
+
+            if (StaminaScript.StaminaCheck() == 1) {
                 if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !ban && !ban2 && !ballFlying) {
                     rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
@@ -174,12 +185,14 @@ public class Player : MonoBehaviour {
                     ballFlying = true;
                     buttonDownB = false;
                     buttonUpB = false;
+
+                    StaminaScript.StaminaCalculation(); //Уменьшение стамины
                 }
                 else {
                     buttonUpB = false;
                 }
             }
-            else{
+            else {
                 ball.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
             }
         }
@@ -297,7 +310,6 @@ public class Player : MonoBehaviour {
                 pointDisplay.text = "Points: " + point.ToString();
                 ballDisplay.text = "Balls: " + numberBalls.ToString();
 
-                StaminaScript.StaminaCalculation(); //Уменьшение стамины после броска
                 SaveScript.SaveCharacteristicsAndPoints();
                 GOBar.gameObject.SetActive(false);
             }
@@ -320,8 +332,6 @@ public class Player : MonoBehaviour {
                 rigidBodyBall.isKinematic = false;
                 BarScript.chance = 0;
                 GOBar.gameObject.SetActive(false);
-
-                StaminaScript.StaminaCalculation(); //Уменьшение стамины после броска
             }
         }
     }

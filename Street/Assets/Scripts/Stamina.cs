@@ -13,13 +13,13 @@ public class Stamina : MonoBehaviour {
         stamina = maxStamina;
     }
 
-    public void StaminaCalculation() {
+    public void StaminaCalculation() { //Высчитывание стамины (Уменьшение)
         stamina -= 1;
         staminaBar.fillAmount = stamina / maxStamina;
         StartCoroutine(IncreaseStamina());
     }
 
-    public int StaminaCheck() {
+    public int StaminaCheck() { //Проверка, есть ли стамина
         if (stamina == 0) return 0;
         else return 1;
     }
