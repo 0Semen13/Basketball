@@ -3,8 +3,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
     [Header("Режимы игры")]
-    [SerializeField] private bool developerMode;
-    [SerializeField] private bool isPhone;
+    [SerializeField] private bool DEVELOP;
 
     [Header("Характристики игрока")]
     [SerializeField] private float speedWithTheBalled; //Скорость с мячом
@@ -19,6 +18,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private double increasingMainZone; //Добавочные значения к процентам за попадание
     [SerializeField] private double increasingMiddleZone;
     [SerializeField] private double increasingLastZone;
+    [SerializeField] private int startAddingPoints;
 
     [Header("Объекты")]
     [SerializeField] private Transform player; //Игрок
@@ -68,6 +68,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private Joystick joystick;
     [SerializeField] private GameObject canvasControlPhone;
     [SerializeField] private GameObject GOBar;
+    [SerializeField] private GameObject trainingPanel1;
 
     private SaveAndLoad SaveScript; //Объекты для кеширования
     private Bar BarScript;
@@ -89,13 +90,15 @@ public class Player : MonoBehaviour {
             currentPercentage2Point = startPercentage2Point;
             currentPercentage3Points = startPercentage3Points;
             currentPercentageExtraLong = startPercentageExtraLong;
-            addingPoints = 50;
+            addingPoints = startAddingPoints;
             BarScript.currentChanceSpeed = BarScript.startChanceSpeed  ;
             firstStart = 1;
             PlayerPrefs.SetInt("firstStart", firstStart);
             SaveScript.SaveCharacteristicsAndPoints(); //Сохранение данных
             SaveScript.SaveAddingPoints();
             SaveScript.SaveBarSpeed();
+
+            trainingPanel1.SetActive(true);
         }
 
         SaveScript.LoadGame(); //Загрузка данных
@@ -115,28 +118,15 @@ public class Player : MonoBehaviour {
 
         GOBar.gameObject.SetActive(false);
 
-        if (isPhone) {
-            canvasControlPhone.gameObject.SetActive(true);
-            FPSLimitation.gameObject.SetActive(true);
-        }
-        else {
-            canvasControlPhone.gameObject.SetActive(false);
-            FPSLimitation.gameObject.SetActive(false);
-        }
+        if (DEVELOP) FPSLimitation.gameObject.SetActive(false);
+        else FPSLimitation.gameObject.SetActive(true);
     }
 
     private void FixedUpdate() {
-        Vector3 direction = new Vector3(0, 0, 0);
+        Vector3 direction = new Vector3(joystick.Horizontal + Input.GetAxis("Horizontal"), 0, joystick.Vertical + Input.GetAxis("Vertical"));
 
-        if (isPhone) direction = new Vector3(joystick.Horizontal, 0, joystick.Vertical);
-        else direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-        if (direction == new Vector3(0, 0, 0)) {
-            animator.SetFloat("Move", 0);
-        }
-        else {
-            animator.SetFloat("Move", 1);
-        }
+        if (direction == new Vector3(0, 0, 0)) animator.SetFloat("Move", 0);
+        else animator.SetFloat("Move", 1);
 
         rigidBody.AddForce(direction * speed); //Движение игрока
         player.LookAt(player.position + direction); //Поворот игрока
@@ -208,7 +198,7 @@ public class Player : MonoBehaviour {
             ThrowFunction();
         }
 
-        if (developerMode) {                    //ДЛЯ РАЗРАБОТЧИКА
+        if (DEVELOP) {                      //ДЛЯ РАЗРАБОТЧИКА
             if (Input.GetKey(KeyCode.F1)) { //Подбор мяча из любого места
                 ballInHands = true;
                 ballFlying = false;

@@ -6,7 +6,6 @@ public class Stamina : MonoBehaviour {
     [SerializeField] private Image staminaBar;
     [SerializeField] private float maxStamina;
     [SerializeField] private float stamina;
-
     [SerializeField] private int staminaBoostTime;
 
     private void Start() {
