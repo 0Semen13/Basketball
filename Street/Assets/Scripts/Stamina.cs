@@ -12,7 +12,7 @@ public class Stamina : MonoBehaviour {
         stamina = maxStamina;
     }
 
-    public void StaminaCalculation() { //Высчитывание стамины (Уменьшение)
+    public void StaminaReduction() { //Уменьшение стамины
         stamina -= 1;
         staminaBar.fillAmount = stamina / maxStamina;
         StartCoroutine(IncreaseStamina());

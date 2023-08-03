@@ -5,71 +5,68 @@ public class SaveAndLoad : MonoBehaviour {
     public int numberBalls_S;
 
     public double percentage2Point_S;
-    private string p2Point_STR;
     public double percentage3Point_S;
-    private string p3Point_STR;
     public double percentageExtraLong_S;
+    private string p2Point_STR;
+    private string p3Point_STR;
     private string pExtraLong_STR;
 
     public int addingPoints_S;
     public float chanceSpeed_S;
 
-    private Player PlayerScript;
-    private Bar BarScript;
+    private Player playerScript;
+    private Bar barScript;
 
     public void SaveCharacteristicsAndPoints() { //Сохранение характеристик игрока, забитых очков и мячей
-        PlayerScript = GameObject.Find("Player").GetComponent<Player>();
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
 
-        percentage2Point_S = PlayerScript.currentPercentage2Point;
+        percentage2Point_S = playerScript.currentPercentage2Point;
         p2Point_STR = percentage2Point_S.ToString();
         PlayerPrefs.SetString("Percentage2Point", p2Point_STR);
 
-        percentage3Point_S = PlayerScript.currentPercentage3Points;
+        percentage3Point_S = playerScript.currentPercentage3Points;
         p3Point_STR = percentage3Point_S.ToString();
         PlayerPrefs.SetString("Percentage3Point", p3Point_STR);
 
-        percentageExtraLong_S = PlayerScript.currentPercentageExtraLong;
+        percentageExtraLong_S = playerScript.currentPercentageExtraLong;
         pExtraLong_STR = percentageExtraLong_S.ToString();
         PlayerPrefs.SetString("PercentageExtraLong", pExtraLong_STR);
 
-        point_S = PlayerScript.point;
+        point_S = playerScript.point;
         PlayerPrefs.SetInt("Points", point_S);
-        numberBalls_S = PlayerScript.numberBalls;
+        numberBalls_S = playerScript.numberBalls;
         PlayerPrefs.SetInt("Ball", numberBalls_S);
 
         PlayerPrefs.Save();
     }
 
     public void SaveBarSpeed() { //Сохранение скорости шкалы вероятности
-        BarScript = GameObject.Find("Bar").GetComponent<Bar>();
+        barScript = GameObject.Find("Bar").GetComponent<Bar>();
 
-        chanceSpeed_S = BarScript.currentChanceSpeed;
+        chanceSpeed_S = barScript.currentChanceSpeed;
         PlayerPrefs.SetFloat("chanceSpeed", chanceSpeed_S);
 
         PlayerPrefs.Save();
     }
 
     public void SaveAddingPoints() { //Сохранение очков добавления
-        PlayerScript = GameObject.Find("Player").GetComponent<Player>();
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
 
-        addingPoints_S = PlayerScript.addingPoints;
+        addingPoints_S = playerScript.addingPoints;
         PlayerPrefs.SetInt("addingPoints", addingPoints_S);
 
         PlayerPrefs.Save();
     }
 
-    public void LoadGame() { //Звгрузка всех данных
+    public void LoadGame() { //Загрузка всех данных
         point_S = PlayerPrefs.GetInt("Points");
         numberBalls_S = PlayerPrefs.GetInt("Ball");
 
         p2Point_STR = PlayerPrefs.GetString("Percentage2Point");
         percentage2Point_S = double.Parse(p2Point_STR, System.Globalization.CultureInfo.InvariantCulture);
-        //percentage2Point_S = Convert.ToDouble(p2Point_STR);
         p3Point_STR = PlayerPrefs.GetString("Percentage3Point");
-        //percentage3Point_S = Convert.ToDouble(p3Point_STR);
         percentage3Point_S = double.Parse(p3Point_STR, System.Globalization.CultureInfo.InvariantCulture);
         pExtraLong_STR = PlayerPrefs.GetString("PercentageExtraLong");
-        //percentageExtraLong_S = Convert.ToDouble(pExtraLong_STR);
         percentageExtraLong_S = double.Parse(pExtraLong_STR, System.Globalization.CultureInfo.InvariantCulture);
 
         addingPoints_S = PlayerPrefs.GetInt("addingPoints");

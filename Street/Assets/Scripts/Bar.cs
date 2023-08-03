@@ -8,7 +8,7 @@ public class Bar : MonoBehaviour {
     public float startChanceSpeed;
     public float currentChanceSpeed;
     public float chance;
-    public float increasing_BarSpeed;
+    public float increasingBarSpeed;
 
     private int flagVsBarRepet = 0; //Флаг, не начинающий бар с начала, пока кнопка не будет отпущена
 

@@ -4,54 +4,54 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [Header("Панели UI")]
-    [SerializeField] private GameObject PausePanel;
-    [SerializeField] private GameObject SettingsPanel;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject settingsPanel;
 
     [Header("Элементы UI")]
-    [SerializeField] private Dropdown QualityDropdown;
+    [SerializeField] private Dropdown qualityDropdown;
 
-    [SerializeField] private Slider MusicSlider;
-    [SerializeField] private Slider SFXSlider;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
 
-    [SerializeField] private Toggle LanguageToggle;
-    [SerializeField] private Toggle VibrationToggle;
-    [SerializeField] private Toggle VFXToggle;
-    [SerializeField] private Toggle NoticesToggle;
-    [SerializeField] private Toggle FPSToggle;
-    [SerializeField] private Toggle NightModeToggle;
+    [SerializeField] private Toggle languageToggle;
+    [SerializeField] private Toggle vibrationToggle;
+    [SerializeField] private Toggle vfxToggle;
+    [SerializeField] private Toggle noticesToggle;
+    [SerializeField] private Toggle fpsToggle;
+    [SerializeField] private Toggle nightModeToggle;
 
     [SerializeField] private GameObject canvasControlPhone;
-    [SerializeField] private Button[] ArrButtons;
-    [SerializeField] private GameObject FPS;
+    [SerializeField] private Button[] buttons;
+    [SerializeField] private GameObject fps;
 
-    [SerializeField] private Text VersionText;
+    [SerializeField] private Text versionText;
 
     private void Start() {
-        SettingsPanel.gameObject.SetActive(false);
-        PausePanel.gameObject.SetActive(false);
-        VersionText.text = "Version: " + Application.version;
+        settingsPanel.gameObject.SetActive(false);
+        pausePanel.gameObject.SetActive(false);
+        versionText.text = "Version: " + Application.version;
         LoadSettings();
     }
 
     // ПАУЗКА
 
     public void PauseOpen() {
-        PausePanel.gameObject.SetActive(true);
         Time.timeScale = 0;
+        pausePanel.gameObject.SetActive(true);
         canvasControlPhone.gameObject.SetActive(false);
 
-        for(int i = 0; i < ArrButtons.Length; i++) {
-            ArrButtons[i].interactable = false;
+        for(int i = 0; i < buttons.Length; i++) {
+            buttons[i].interactable = false;
         }
     }
 
     public void PauseClose() {
-        PausePanel.gameObject.SetActive(false);
         Time.timeScale = 1;
+        pausePanel.gameObject.SetActive(false);
         canvasControlPhone.gameObject.SetActive(true);
 
-        for (int i = 0; i < ArrButtons.Length; i++) {
-            ArrButtons[i].interactable = true;
+        for (int i = 0; i < buttons.Length; i++) {
+            buttons[i].interactable = true;
         }
     }
 
@@ -62,45 +62,45 @@ public class UIManager : MonoBehaviour
     }
 
     public void SaveSettings() {
-        PlayerPrefs.SetInt("Quality", QualityDropdown.value);
+        PlayerPrefs.SetInt("Quality", qualityDropdown.value);
 
-        PlayerPrefs.SetFloat("Music", MusicSlider.value);
-        PlayerPrefs.SetFloat("SFX", SFXSlider.value);
+        PlayerPrefs.SetFloat("Music", musicSlider.value);
+        PlayerPrefs.SetFloat("SFX", sfxSlider.value);
 
-        PlayerPrefs.SetInt("Language", System.Convert.ToInt32(LanguageToggle.isOn));
-        PlayerPrefs.SetInt("Vibration", System.Convert.ToInt32(VibrationToggle.isOn));
-        PlayerPrefs.SetInt("VFX", System.Convert.ToInt32(VFXToggle.isOn));
-        PlayerPrefs.SetInt("Notices", System.Convert.ToInt32(NoticesToggle.isOn));
-        PlayerPrefs.SetInt("FPS", System.Convert.ToInt32(FPSToggle.isOn));
-        FPS.SetActive(FPSToggle.isOn);
-        PlayerPrefs.SetInt("NightMode", System.Convert.ToInt32(NightModeToggle.isOn));
+        PlayerPrefs.SetInt("Language", System.Convert.ToInt32(languageToggle.isOn));
+        PlayerPrefs.SetInt("Vibration", System.Convert.ToInt32(vibrationToggle.isOn));
+        PlayerPrefs.SetInt("VFX", System.Convert.ToInt32(vfxToggle.isOn));
+        PlayerPrefs.SetInt("Notices", System.Convert.ToInt32(noticesToggle.isOn));
+        PlayerPrefs.SetInt("FPS", System.Convert.ToInt32(fpsToggle.isOn));
+        fps.SetActive(fpsToggle.isOn);
+        PlayerPrefs.SetInt("NightMode", System.Convert.ToInt32(nightModeToggle.isOn));
 
-        SettingsPanel.gameObject.SetActive(false);
+        settingsPanel.gameObject.SetActive(false);
         PlayerPrefs.Save();
     }
 
     public void LoadSettings() {
-        if (PlayerPrefs.HasKey("Quality")) QualityDropdown.value = PlayerPrefs.GetInt("Quality");
-        else QualityDropdown.value = 1;
+        if (PlayerPrefs.HasKey("Quality")) qualityDropdown.value = PlayerPrefs.GetInt("Quality");
+        else qualityDropdown.value = 1;
 
-        if (PlayerPrefs.HasKey("Music")) MusicSlider.value = PlayerPrefs.GetFloat("Music");
-        else MusicSlider.value = 1;
-        if (PlayerPrefs.HasKey("SFX")) SFXSlider.value = PlayerPrefs.GetFloat("SFX");
-        else SFXSlider.value = 1;
+        if (PlayerPrefs.HasKey("Music")) musicSlider.value = PlayerPrefs.GetFloat("Music");
+        else musicSlider.value = 1;
+        if (PlayerPrefs.HasKey("SFX")) sfxSlider.value = PlayerPrefs.GetFloat("SFX");
+        else sfxSlider.value = 1;
 
-        if (PlayerPrefs.HasKey("Language")) LanguageToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Language"));
-        else LanguageToggle.isOn = true;
-        if (PlayerPrefs.HasKey("Vibration")) VibrationToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Vibration"));
-        else VibrationToggle.isOn = true;
-        if (PlayerPrefs.HasKey("VFX")) VFXToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("VFX"));
-        else VFXToggle.isOn = true;
-        if (PlayerPrefs.HasKey("Notices")) NoticesToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Notices"));
-        else NoticesToggle.isOn = true;
-        if (PlayerPrefs.HasKey("FPS")) FPSToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("FPS"));
-        else FPSToggle.isOn = false;
-        FPS.SetActive(FPSToggle.isOn);
-        if (PlayerPrefs.HasKey("NightMode")) NightModeToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("NightMode"));
-        else NightModeToggle.isOn = false;
+        if (PlayerPrefs.HasKey("Language")) languageToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Language"));
+        else languageToggle.isOn = true;
+        if (PlayerPrefs.HasKey("Vibration")) vibrationToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Vibration"));
+        else vibrationToggle.isOn = true;
+        if (PlayerPrefs.HasKey("VFX")) vfxToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("VFX"));
+        else vfxToggle.isOn = true;
+        if (PlayerPrefs.HasKey("Notices")) noticesToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Notices"));
+        else noticesToggle.isOn = true;
+        if (PlayerPrefs.HasKey("FPS")) fpsToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("FPS"));
+        else fpsToggle.isOn = false;
+        fps.SetActive(fpsToggle.isOn);
+        if (PlayerPrefs.HasKey("NightMode")) nightModeToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("NightMode"));
+        else nightModeToggle.isOn = false;
     }
 
     public void ResetSettings() { //Сброс настроек

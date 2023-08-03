@@ -18,7 +18,6 @@ public class Player : MonoBehaviour {
     [SerializeField] private double increasingMainZone; //Добавочные значения к процентам за попадание
     [SerializeField] private double increasingMiddleZone;
     [SerializeField] private double increasingLastZone;
-    [SerializeField] private int startAddingPoints;
 
     [Header("Объекты")]
     [SerializeField] private Transform player; //Игрок
@@ -28,18 +27,31 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform posOverHead; //Позиция рук над головой
     [SerializeField] private Transform posDribble; //Позиция рук внизу
     [SerializeField] private Transform target; //Цель
-    [SerializeField] private Transform[] Misses; //Массив точек промаха
+    [SerializeField] private Transform[] misses; //Массив точек промаха
     [SerializeField] private Transform teleportPosition; //Позиция телепорта
     [SerializeField] private Transform positionBall;
     [SerializeField] private GameObject FPSLimitation;
     [SerializeField] private GameObject model;
 
+    [Header("Элементы UI")]
+    [SerializeField] private Text pointDisplay;
+    [SerializeField] private Text ballDisplay;
+    [SerializeField] private Joystick joystick;
+    [SerializeField] private GameObject canvasControlPhone;
+    [SerializeField] private GameObject bar;
+    [SerializeField] private GameObject stamina;
+    [SerializeField] private GameObject trainingPanel1;
+
+    [Header("Прочие поля")]
+    [SerializeField] private int startAddingPoints;
+    [SerializeField] private int increasingAddingPoints;
+
     private int firstStart = 0;
     private bool ballInHands = false; //Мяч в руках
     private bool ballFlying = false; //Мяч летит (Не в руках)
     private bool ballStart = true; //Мяч при старте
-    private bool ban = false; //Запрет на бросок за пределами площадки
-    private bool ban2 = false; //Запрет на бросок из мертвой зоны
+    private bool banThrowOutsideSquare = false; //Запрет на бросок за пределами площадки
+    private bool banThrowInDeadZone = false; //Запрет на бросок из мертвой зоны
     private float t0 = 0;
 
     private bool twoPoint = false; //Флаги показывающий, в какой зоне находится игрок
@@ -62,17 +74,9 @@ public class Player : MonoBehaviour {
     public int numberBalls; //Забитые мячи
     public int addingPoints; //Очки, после которых ускоряется шкала вероятности
 
-    [Header("Элементы UI")]
-    [SerializeField] private Text pointDisplay;
-    [SerializeField] private Text ballDisplay;
-    [SerializeField] private Joystick joystick;
-    [SerializeField] private GameObject canvasControlPhone;
-    [SerializeField] private GameObject GOBar;
-    [SerializeField] private GameObject trainingPanel1;
-
-    private SaveAndLoad SaveScript; //Объекты для кеширования
-    private Bar BarScript;
-    private Stamina StaminaScript;
+    private SaveAndLoad saveScript; //Объекты для кеширования
+    private Bar barScript;
+    private Stamina staminaScript;
     private Rigidbody rigidBody;
     private Rigidbody rigidBodyBall;
     private Animator animator;
@@ -80,9 +84,9 @@ public class Player : MonoBehaviour {
     private void Start() {
         rigidBody = player.GetComponent<Rigidbody>(); //Получение rigidbody
         rigidBodyBall = ball.GetComponent<Rigidbody>();
-        SaveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скриптов
-        BarScript = GameObject.Find("Bar").GetComponent<Bar>();
-        StaminaScript = GameObject.Find("Stamina").GetComponent<Stamina>();
+        saveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>(); //Получение скриптов
+        barScript = bar.GetComponent<Bar>();
+        staminaScript = stamina.GetComponent<Stamina>();
         animator = model.GetComponent<Animator>(); //Получение аниматора
 
         firstStart = PlayerPrefs.GetInt("firstStart");
@@ -91,51 +95,49 @@ public class Player : MonoBehaviour {
             currentPercentage3Points = startPercentage3Points;
             currentPercentageExtraLong = startPercentageExtraLong;
             addingPoints = startAddingPoints;
-            BarScript.currentChanceSpeed = BarScript.startChanceSpeed  ;
+            barScript.currentChanceSpeed = barScript.startChanceSpeed;
             firstStart = 1;
+            saveScript.SaveCharacteristicsAndPoints(); //Сохранение данных
+            saveScript.SaveAddingPoints();
+            saveScript.SaveBarSpeed();
             PlayerPrefs.SetInt("firstStart", firstStart);
-            SaveScript.SaveCharacteristicsAndPoints(); //Сохранение данных
-            SaveScript.SaveAddingPoints();
-            SaveScript.SaveBarSpeed();
-
             trainingPanel1.SetActive(true);
         }
 
-        SaveScript.LoadGame(); //Загрузка данных
-        currentPercentage2Point = SaveScript.percentage2Point_S;
-        currentPercentage3Points = SaveScript.percentage3Point_S;
-        currentPercentageExtraLong = SaveScript.percentageExtraLong_S;
-        addingPoints = SaveScript.addingPoints_S;
-        BarScript.currentChanceSpeed = SaveScript.chanceSpeed_S;
+        saveScript.LoadGame(); //Загрузка данных
+        currentPercentage2Point = saveScript.percentage2Point_S;
+        currentPercentage3Points = saveScript.percentage3Point_S;
+        currentPercentageExtraLong = saveScript.percentageExtraLong_S;
+        addingPoints = saveScript.addingPoints_S;
+        barScript.currentChanceSpeed = saveScript.chanceSpeed_S;
 
-        point = SaveScript.point_S;
-        numberBalls = SaveScript.numberBalls_S;
-        pointDisplay.text = "Points: " + point.ToString();
-        ballDisplay.text = "Balls: " + numberBalls.ToString();
+        point = saveScript.point_S;
+        numberBalls = saveScript.numberBalls_S;
+        pointDisplay.text = "Очки: " + point.ToString();
+        ballDisplay.text = "Мячи: " + numberBalls.ToString();
 
         player.position = teleportPosition.position;
         ball.position = positionBall.position;
 
-        GOBar.gameObject.SetActive(false);
-
-        if (DEVELOP) FPSLimitation.gameObject.SetActive(false);
-        else FPSLimitation.gameObject.SetActive(true);
+        bar.gameObject.SetActive(false);
+        FPSLimitation.gameObject.SetActive(!DEVELOP);
     }
 
     private void FixedUpdate() {
         Vector3 direction = new Vector3(joystick.Horizontal + Input.GetAxis("Horizontal"), 0, joystick.Vertical + Input.GetAxis("Vertical"));
 
         if (direction == new Vector3(0, 0, 0)) animator.SetFloat("Move", 0);
-        else animator.SetFloat("Move", 1);
-
-        rigidBody.AddForce(direction * speed); //Движение игрока
-        player.LookAt(player.position + direction); //Поворот игрока
+        else {
+            animator.SetFloat("Move", 1);
+            rigidBody.AddForce(direction * speed); //Движение игрока
+            player.LookAt(player.position + direction); //Поворот игрока
+        }
 
         if (ballInHands) {
-            if (StaminaScript.StaminaCheck() == 1) {
-                if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !ban && !ban2) {
+            if (staminaScript.StaminaCheck() == 1) {
+                if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !banThrowOutsideSquare && !banThrowInDeadZone) {
                     rigidBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                    GOBar.gameObject.SetActive(true);
+                    bar.gameObject.SetActive(true);
                     animator.SetFloat("Move", 0);
                     animator.SetBool("Throw", true);
                     ball.position = posOverHead.position;
@@ -163,8 +165,8 @@ public class Player : MonoBehaviour {
             ballStart = false;
             pnt = 0;
 
-            if (StaminaScript.StaminaCheck() == 1) {
-                if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !ban && !ban2 && !ballFlying) {
+            if (staminaScript.StaminaCheck() == 1) {
+                if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !banThrowOutsideSquare && !banThrowInDeadZone && !ballFlying) {
                     rigidBody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
                     t0 = 0;
@@ -176,7 +178,7 @@ public class Player : MonoBehaviour {
                     buttonDownB = false;
                     buttonUpB = false;
 
-                    StaminaScript.StaminaCalculation(); //Уменьшение стамины
+                    staminaScript.StaminaReduction(); //Уменьшение стамины
                 }
                 else {
                     buttonUpB = false;
@@ -207,36 +209,34 @@ public class Player : MonoBehaviour {
             }
 
             if (Input.GetKey(KeyCode.F2)) { //Обнуление всех данных
-                SaveScript.ResetData();
+                saveScript.ResetData();
                 point = 0;
                 numberBalls = 0;
-                pointDisplay.text = "Points: " + point.ToString();
-                ballDisplay.text = "Balls: " + numberBalls.ToString();
+                pointDisplay.text = "Очки: " + point.ToString();
+                ballDisplay.text = "Мячи: " + numberBalls.ToString();
             }
         }
     }
 
     private void ThrowFunction() {
         if (superPoint && threePoint && twoPoint) { //При броске находится в средней зоне
-            if (num <= (currentPercentage2Point * BarScript.chance) / 100) {
+            if (num <= (currentPercentage2Point * barScript.chance) / 100) {
                 isHit = true;
                 pnt = 2;
             }
             ballHeightFactor = 3.6f;
-            ballTimeRatio = 0.41f;
+            ballTimeRatio = 0.45f;
         }
-
-        if (superPoint && threePoint && !twoPoint) { //При броске находится в дальней зоне
-            if (num <= (currentPercentage3Points * BarScript.chance) / 100) {
+        else if (superPoint && threePoint && !twoPoint) { //При броске находится в дальней зоне
+            if (num <= (currentPercentage3Points * barScript.chance) / 100) {
                 isHit = true;
                 pnt = 3;
             }
             ballHeightFactor = 4.8f;
-            ballTimeRatio = 0.46f;
+            ballTimeRatio = 0.525f;
         }
-
-        if (superPoint && !threePoint && !twoPoint) { //При броске находится в сверх дальней зоне
-            if (num <= (currentPercentageExtraLong * BarScript.chance) / 100) {
+        else if (superPoint && !threePoint && !twoPoint) { //При броске находится в сверх дальней зоне
+            if (num <= (currentPercentageExtraLong * barScript.chance) / 100) {
                 isHit = true;
                 pnt = 4;
             }
@@ -244,7 +244,7 @@ public class Player : MonoBehaviour {
                 hitSuperPoint = 0;
             }
             ballHeightFactor = 6.2f;
-            ballTimeRatio = 0.55f;
+            ballTimeRatio = 0.61f;
         }
 
         if (isHit) { //Попал в кольцо
@@ -286,22 +286,22 @@ public class Player : MonoBehaviour {
                 }
 
                 numberBalls += 1;
-                BarScript.chance = 0;
+                barScript.chance = 0;
 
                 if (point >= addingPoints) {
-                    addingPoints += 50;
-                    if (BarScript.currentChanceSpeed < BarScript.maxChanceSpeed) {
-                        BarScript.currentChanceSpeed += BarScript.increasing_BarSpeed;
-                        SaveScript.SaveBarSpeed();
+                    addingPoints += increasingAddingPoints;
+                    if (barScript.currentChanceSpeed < barScript.maxChanceSpeed) {
+                        barScript.currentChanceSpeed += barScript.increasingBarSpeed;
+                        saveScript.SaveBarSpeed();
                     }
-                    SaveScript.SaveAddingPoints();
+                    saveScript.SaveAddingPoints();
                 }
 
-                pointDisplay.text = "Points: " + point.ToString();
-                ballDisplay.text = "Balls: " + numberBalls.ToString();
+                pointDisplay.text = "Очки: " + point.ToString();
+                ballDisplay.text = "Мячи: " + numberBalls.ToString();
 
-                SaveScript.SaveCharacteristicsAndPoints();
-                GOBar.gameObject.SetActive(false);
+                saveScript.SaveCharacteristicsAndPoints();
+                bar.gameObject.SetActive(false);
             }
         }
         else {
@@ -310,7 +310,7 @@ public class Player : MonoBehaviour {
             float time = t0 / duration; //Время полета
 
             Vector3 A = posOverHead.position;
-            Vector3 B = Misses[mss - 1].position;
+            Vector3 B = misses[mss - 1].position;
             Vector3 posFly = Vector3.Lerp(A, B, time); //Изменение позиции (полет)
             Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
             ball.position = posFly + arc;
@@ -320,8 +320,8 @@ public class Player : MonoBehaviour {
             if (time >= 1) {
                 ballFlying = false;
                 rigidBodyBall.isKinematic = false;
-                BarScript.chance = 0;
-                GOBar.gameObject.SetActive(false);
+                barScript.chance = 0;
+                bar.gameObject.SetActive(false);
             }
         }
     }
@@ -333,7 +333,7 @@ public class Player : MonoBehaviour {
         }
 
         if (other.gameObject.tag == "DeadZones") { //Мертвая зона под кольцом
-            ban2 = true;
+            banThrowInDeadZone = true;
         }
 
         if (other.gameObject.tag == "2 Point") {
@@ -345,7 +345,7 @@ public class Player : MonoBehaviour {
         }
 
         if (other.gameObject.tag == "Extra long") {
-            ban = false;
+            banThrowOutsideSquare = false;
         }
     }
 
@@ -359,11 +359,11 @@ public class Player : MonoBehaviour {
         }
 
         if (other.gameObject.tag == "Extra long") {
-            ban = true;
+            banThrowOutsideSquare = true;
         }
 
         if (other.gameObject.tag == "DeadZones") {
-            ban2 = false;
+            banThrowInDeadZone = false;
         }
 
         if (other.gameObject.tag == "Limits") { //Выход за пределы площадки
