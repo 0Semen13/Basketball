@@ -6,29 +6,37 @@ public class UIManager : MonoBehaviour
     [Header("Панели UI")]
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject promoCodePanel;
 
     [Header("Элементы UI")]
-    [SerializeField] private Dropdown qualityDropdown;
-
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
-
+    [SerializeField] private Dropdown qualityDropdown;
     [SerializeField] private Toggle languageToggle;
     [SerializeField] private Toggle vibrationToggle;
     [SerializeField] private Toggle vfxToggle;
     [SerializeField] private Toggle noticesToggle;
     [SerializeField] private Toggle fpsToggle;
     [SerializeField] private Toggle nightModeToggle;
+    [SerializeField] private Text versionText;
 
     [SerializeField] private GameObject canvasControlPhone;
     [SerializeField] private Button[] buttons;
     [SerializeField] private GameObject fps;
 
-    [SerializeField] private Text versionText;
+    [TextArea(5, 5)] public string cheatCodes = "Чит коды:";
+    [SerializeField] private InputField inputField;
+
+    [SerializeField] private Text twoPointsText;
+    [SerializeField] private Text threePointsText;
+    [SerializeField] private Text extraLongPointsText;
+
+    private Player playerScript;
 
     private void Start() {
-        settingsPanel.gameObject.SetActive(false);
+        //settingsPanel.gameObject.SetActive(false);
         pausePanel.gameObject.SetActive(false);
+        promoCodePanel.gameObject.SetActive(false);
         versionText.text = "Version: " + Application.version;
         LoadSettings();
     }
@@ -53,6 +61,22 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++) {
             buttons[i].interactable = true;
         }
+    }
+
+    public void CharacteristicsOpen() {
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
+
+        twoPointsText.text += playerScript.currentPercentage2Point;
+        threePointsText.text += playerScript.currentPercentage3Points;
+        extraLongPointsText.text += playerScript.currentPercentageExtraLong;
+    }
+
+    public void CharacteristicsClose() {
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
+
+        twoPointsText.text = "Средние: ";
+        threePointsText.text = "Дальние: ";
+        extraLongPointsText.text = "Сверх-дальние: ";
     }
 
     //НАСТРОЙКИ
@@ -114,5 +138,21 @@ public class UIManager : MonoBehaviour
         PlayerPrefs.DeleteKey("FPS");
         PlayerPrefs.DeleteKey("NightMode");
         LoadSettings();
+    }
+
+    //Чит-Код
+
+    public void Console() { //Чит консоль
+        switch (inputField.text) {
+            case ("1"):
+            Debug.Log("1");
+            break;
+
+            default:
+            Debug.Log(inputField.text);
+            break;
+        }
+
+        inputField.text = "";
     }
 }

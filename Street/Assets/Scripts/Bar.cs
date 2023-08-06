@@ -6,8 +6,8 @@ public class Bar : MonoBehaviour {
     private float maxChance = 100f;
     public float maxChanceSpeed;
     public float startChanceSpeed;
-    public float currentChanceSpeed;
-    public float chance;
+    [HideInInspector] public float currentChanceSpeed;
+    [HideInInspector] public float chance;
     public float increasingBarSpeed;
 
     private int flagVsBarRepet = 0; //Флаг, не начинающий бар с начала, пока кнопка не будет отпущена

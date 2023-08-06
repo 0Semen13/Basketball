@@ -1,18 +1,18 @@
 using UnityEngine;
 
 public class SaveAndLoad : MonoBehaviour {
-    public int point_S;
-    public int numberBalls_S;
+    [HideInInspector] public int point_S;
+    [HideInInspector] public int numberBalls_S;
 
-    public double percentage2Point_S;
-    public double percentage3Point_S;
-    public double percentageExtraLong_S;
+    [HideInInspector] public double percentage2Point_S;
+    [HideInInspector] public double percentage3Point_S;
+    [HideInInspector] public double percentageExtraLong_S;
     private string p2Point_STR;
     private string p3Point_STR;
     private string pExtraLong_STR;
 
-    public int addingPoints_S;
-    public float chanceSpeed_S;
+    [HideInInspector] public int addingPoints_S;
+    [HideInInspector] public float chanceSpeed_S;
 
     private Player playerScript;
     private Bar barScript;

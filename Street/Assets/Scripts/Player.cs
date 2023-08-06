@@ -5,16 +5,16 @@ public class Player : MonoBehaviour {
     [Header("Режимы игры")]
     [SerializeField] private bool DEVELOP;
 
-    [Header("Характристики игрока")]
+    [Header("Характеристики игрока")]
     [SerializeField] private float speedWithTheBalled; //Скорость с мячом
     [SerializeField] private float speedWithoutBall; //Скорость без мяча
     private float speed = 0;
     [SerializeField] private double startPercentage2Point; //Стартовые значения процентов
     [SerializeField] private double startPercentage3Points;
     [SerializeField] private double startPercentageExtraLong;
-    [SerializeField] public double currentPercentage2Point; //Текущие значения процентов
-    [SerializeField] public double currentPercentage3Points;
-    [SerializeField] public double currentPercentageExtraLong;
+    [HideInInspector] public double currentPercentage2Point; //Текущие значения процентов
+    [HideInInspector] public double currentPercentage3Points;
+    [HideInInspector] public double currentPercentageExtraLong;
     [SerializeField] private double increasingMainZone; //Добавочные значения к процентам за попадание
     [SerializeField] private double increasingMiddleZone;
     [SerializeField] private double increasingLastZone;
@@ -41,6 +41,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private GameObject bar;
     [SerializeField] private GameObject stamina;
     [SerializeField] private GameObject trainingPanel1;
+    [SerializeField] private GameObject settingsPanel;
 
     [Header("Прочие поля")]
     [SerializeField] private int startAddingPoints;
@@ -70,9 +71,9 @@ public class Player : MonoBehaviour {
     private int pnt = 0; //Число, сколько очков должно добавиться после попадания
     private int mss = 0; //Число, означающее индекс промаха при промахе
 
-    public int point; //Забитые очки
-    public int numberBalls; //Забитые мячи
-    public int addingPoints; //Очки, после которых ускоряется шкала вероятности
+    [HideInInspector] public int point; //Забитые очки
+    [HideInInspector] public int numberBalls; //Забитые мячи
+    [HideInInspector] public int addingPoints; //Очки, после которых ускоряется шкала вероятности
 
     private SaveAndLoad saveScript; //Объекты для кеширования
     private Bar barScript;
@@ -101,6 +102,7 @@ public class Player : MonoBehaviour {
             saveScript.SaveAddingPoints();
             saveScript.SaveBarSpeed();
             PlayerPrefs.SetInt("firstStart", firstStart);
+            settingsPanel.SetActive(true);
             trainingPanel1.SetActive(true);
         }
 
@@ -327,7 +329,7 @@ public class Player : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == "Ball" && !ballInHands) {  //Подбор мяча
+        if (other.gameObject.tag == "Ball" && !ballInHands) {
             ballInHands = true;
             rigidBodyBall.isKinematic = true;
         }
