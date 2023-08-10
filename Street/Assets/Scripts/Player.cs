@@ -97,11 +97,9 @@ public class Player : MonoBehaviour {
             currentPercentageExtraLong = startPercentageExtraLong;
             addingPoints = startAddingPoints;
             barScript.currentChanceSpeed = barScript.startChanceSpeed;
-            firstStart = 1;
             saveScript.SaveCharacteristicsAndPoints(); //—охранение данных
             saveScript.SaveAddingPoints();
             saveScript.SaveBarSpeed();
-            PlayerPrefs.SetInt("firstStart", firstStart);
             settingsPanel.SetActive(true);
             trainingPanel1.SetActive(true);
         }
@@ -115,8 +113,8 @@ public class Player : MonoBehaviour {
 
         point = saveScript.point_S;
         numberBalls = saveScript.numberBalls_S;
-        pointDisplay.text = "ќчки: " + point.ToString();
-        ballDisplay.text = "ћ€чи: " + numberBalls.ToString();
+        pointDisplay.text = point.ToString();
+        ballDisplay.text = numberBalls.ToString();
 
         player.position = teleportPosition.position;
         ball.position = positionBall.position;
@@ -214,8 +212,8 @@ public class Player : MonoBehaviour {
                 saveScript.ResetData();
                 point = 0;
                 numberBalls = 0;
-                pointDisplay.text = "ќчки: " + point.ToString();
-                ballDisplay.text = "ћ€чи: " + numberBalls.ToString();
+                pointDisplay.text = point.ToString();
+                ballDisplay.text = numberBalls.ToString();
             }
         }
     }
@@ -299,8 +297,8 @@ public class Player : MonoBehaviour {
                     saveScript.SaveAddingPoints();
                 }
 
-                pointDisplay.text = "ќчки: " + point.ToString();
-                ballDisplay.text = "ћ€чи: " + numberBalls.ToString();
+                pointDisplay.text = point.ToString();
+                ballDisplay.text = numberBalls.ToString();
 
                 saveScript.SaveCharacteristicsAndPoints();
                 bar.gameObject.SetActive(false);

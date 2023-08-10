@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -32,6 +34,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text extraLongPointsText;
 
     private Player playerScript;
+
+    public event EventHandler onLanguageChange;
 
     private void Start() {
         //settingsPanel.gameObject.SetActive(false);
@@ -74,15 +78,24 @@ public class UIManager : MonoBehaviour
     public void CharacteristicsClose() {
         playerScript = GameObject.Find("Player").GetComponent<Player>();
 
-        twoPointsText.text = "Средние: ";
-        threePointsText.text = "Дальние: ";
-        extraLongPointsText.text = "Сверх-дальние: ";
+        twoPointsText.text = "";
+        threePointsText.text = "";
+        extraLongPointsText.text = "";
+    }
+
+    public void PassedTheRules() {
+        PlayerPrefs.SetInt("firstStart", 1);
     }
 
     //НАСТРОЙКИ
 
     public void SetQality(int qualityIndex) {
         QualitySettings.SetQualityLevel(qualityIndex);
+    }
+
+    public void SetLanguage() {
+        LocalisationSystem.SetLanguage(languageToggle.isOn);
+        onLanguageChange?.Invoke(this, EventArgs.Empty);
     }
 
     public void SaveSettings() {
@@ -114,6 +127,7 @@ public class UIManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("Language")) languageToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Language"));
         else languageToggle.isOn = true;
+
         if (PlayerPrefs.HasKey("Vibration")) vibrationToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Vibration"));
         else vibrationToggle.isOn = true;
         if (PlayerPrefs.HasKey("VFX")) vfxToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("VFX"));
