@@ -381,8 +381,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50.90203, y: 88.63968}
-  m_SizeDelta: {x: 3860.4, y: 397.675}
+  m_AnchoredPosition: {x: -50.90203, y: 78.741}
+  m_SizeDelta: {x: 3860.4, y: 436.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &33935138
 MonoBehaviour:
@@ -1546,8 +1546,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 808039257}
-          m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        - m_Target: {fileID: 264182922}
+          m_TargetAssemblyTypeName: Ball, Assembly-CSharp
           m_MethodName: ButtonUp
           m_Mode: 1
           m_Arguments:
@@ -1562,8 +1562,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 808039257}
-          m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        - m_Target: {fileID: 264182922}
+          m_TargetAssemblyTypeName: Ball, Assembly-CSharp
           m_MethodName: ButtonDown
           m_Mode: 1
           m_Arguments:
@@ -2024,6 +2024,7 @@ GameObject:
   - component: {fileID: 264182919}
   - component: {fileID: 264182921}
   - component: {fileID: 264182920}
+  - component: {fileID: 264182922}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -2076,6 +2077,36 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5867119, y: 0.569842, z: 0.5867119}
   m_Center: {x: -0.0126514435, y: 0.0042173266, z: 0.004217148}
+--- !u!114 &264182922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264182918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4f349b5b3543bd419b621a95ccc4ac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ball: {fileID: 264182918}
+  player: {fileID: 808039251}
+  bar: {fileID: 613875845}
+  stamina: {fileID: 519723045}
+  target: {fileID: 1780305961}
+  positionBall: {fileID: 1767459076}
+  posOverHead: {fileID: 1199952637}
+  posDribble: {fileID: 751531921}
+  misses:
+  - {fileID: 1604421596}
+  - {fileID: 1202186646}
+  - {fileID: 1424464401}
+  - {fileID: 1019513897}
+  - {fileID: 1532520643}
+  - {fileID: 113422900}
+  UIManager: {fileID: 1061409696}
+  startAddingPoints: 0
+  increasingAddingPoints: 0
 --- !u!1 &277826820
 GameObject:
   m_ObjectHideFlags: 0
@@ -2159,18 +2190,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1061409698}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: CharacteristicsClose
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 812893037}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -4092,8 +4111,6 @@ MonoBehaviour:
   chanceBar: {fileID: 1547453934}
   maxChanceSpeed: 1.1
   startChanceSpeed: 0.8
-  currentChanceSpeed: 0
-  chance: 0
   increasingBarSpeed: 0
 --- !u!1 &622564264
 GameObject:
@@ -5708,10 +5725,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 808039256}
-  - component: {fileID: 808039257}
   - component: {fileID: 808039254}
   - component: {fileID: 808039253}
   - component: {fileID: 808039252}
+  - component: {fileID: 808039257}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -5803,36 +5820,14 @@ MonoBehaviour:
   increasingMiddleZone: 0
   increasingLastZone: 0
   player: {fileID: 808039256}
-  ball: {fileID: 264182919}
-  hands: {fileID: 1388219431}
-  rightHand: {fileID: 1473640576}
-  posOverHead: {fileID: 1199952637}
-  posDribble: {fileID: 751531921}
-  target: {fileID: 1780305961}
-  misses:
-  - {fileID: 1604421596}
-  - {fileID: 1202186646}
-  - {fileID: 1424464401}
-  - {fileID: 1019513897}
-  - {fileID: 1532520643}
-  - {fileID: 113422900}
-  teleportPosition: {fileID: 1373609561}
-  positionBall: {fileID: 1767459076}
-  FPSLimitation: {fileID: 2078506309}
   model: {fileID: 2033062659}
-  pointDisplay: {fileID: 2143662365}
-  ballDisplay: {fileID: 1490707300}
+  target: {fileID: 1780305961}
+  teleportPosition: {fileID: 1373609561}
+  FPSLimitation: {fileID: 2078506309}
+  UIManager: {fileID: 1061409696}
   joystick: {fileID: 1007256913}
-  canvasControlPhone: {fileID: 1975194133}
   bar: {fileID: 613875845}
   stamina: {fileID: 519723045}
-  trainingPanel1: {fileID: 240453011}
-  settingsPanel: {fileID: 1261332573}
-  startAddingPoints: 0
-  increasingAddingPoints: 0
-  point: 0
-  numberBalls: 0
-  addingPoints: 0
 --- !u!1 &809234896
 GameObject:
   m_ObjectHideFlags: 0
@@ -8330,6 +8325,10 @@ MonoBehaviour:
   pausePanel: {fileID: 1416100976}
   settingsPanel: {fileID: 1261332573}
   promoCodePanel: {fileID: 1355615842}
+  characteristicsPanel: {fileID: 812893037}
+  aboutTheGamePanel: {fileID: 1843841523}
+  trainingPanel_1: {fileID: 240453011}
+  trainingPanel_2: {fileID: 1043706658}
   musicSlider: {fileID: 1726697759}
   sfxSlider: {fileID: 594652404}
   qualityDropdown: {fileID: 1186580824}
@@ -8351,6 +8350,8 @@ MonoBehaviour:
   twoPointsText: {fileID: 1777289647}
   threePointsText: {fileID: 1053883482}
   extraLongPointsText: {fileID: 2064176408}
+  pointDisplay: {fileID: 2143662365}
+  ballDisplay: {fileID: 1490707300}
 --- !u!1 &1061586170
 GameObject:
   m_ObjectHideFlags: 0
@@ -14599,13 +14600,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc332ec2d39c9a0499897185afd9bdf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  point_S: 0
-  numberBalls_S: 0
-  percentage2Point_S: 0
-  percentage3Point_S: 0
-  percentageExtraLong_S: 0
-  addingPoints_S: 0
-  chanceSpeed_S: 0
 --- !u!4 &1741675370
 Transform:
   m_ObjectHideFlags: 0

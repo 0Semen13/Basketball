@@ -1,6 +1,6 @@
 using System;
+using System.Drawing;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -9,6 +9,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject promoCodePanel;
+    [SerializeField] private GameObject characteristicsPanel;
+    [SerializeField] private GameObject aboutTheGamePanel;
+    [SerializeField] private GameObject trainingPanel_1;
+    [SerializeField] private GameObject trainingPanel_2;
 
     [Header("Элементы UI")]
     [SerializeField] private Slider musicSlider;
@@ -33,15 +37,34 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text threePointsText;
     [SerializeField] private Text extraLongPointsText;
 
+    [SerializeField] private Text pointDisplay;
+    [SerializeField] private Text ballDisplay;
+
     private Player playerScript;
 
     public event EventHandler onLanguageChange;
 
+    private void Awake() {
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
+    }
+
     private void Start() {
-        //settingsPanel.gameObject.SetActive(false);
+        if (PlayerPrefs.GetInt("firstStart") == 0) {
+            settingsPanel.gameObject.SetActive(true);
+            trainingPanel_1.gameObject.SetActive(true);
+        }
+        else {
+            settingsPanel.gameObject.SetActive(false);
+            trainingPanel_1.gameObject.SetActive(false);
+        }
+        trainingPanel_2.gameObject.SetActive(false);
         pausePanel.gameObject.SetActive(false);
         promoCodePanel.gameObject.SetActive(false);
+        characteristicsPanel.gameObject.SetActive(false);
+        aboutTheGamePanel.gameObject.SetActive(false);
+
         versionText.text = "Version: " + Application.version;
+
         LoadSettings();
     }
 
@@ -68,19 +91,9 @@ public class UIManager : MonoBehaviour
     }
 
     public void CharacteristicsOpen() {
-        playerScript = GameObject.Find("Player").GetComponent<Player>();
-
-        twoPointsText.text += playerScript.currentPercentage2Point;
-        threePointsText.text += playerScript.currentPercentage3Points;
-        extraLongPointsText.text += playerScript.currentPercentageExtraLong;
-    }
-
-    public void CharacteristicsClose() {
-        playerScript = GameObject.Find("Player").GetComponent<Player>();
-
-        twoPointsText.text = "";
-        threePointsText.text = "";
-        extraLongPointsText.text = "";
+        twoPointsText.text = playerScript.GetCurrentPercentage(2).ToString();
+        threePointsText.text = playerScript.GetCurrentPercentage(3).ToString();
+        extraLongPointsText.text = playerScript.GetCurrentPercentage(4).ToString();
     }
 
     public void PassedTheRules() {
@@ -104,13 +117,13 @@ public class UIManager : MonoBehaviour
         PlayerPrefs.SetFloat("Music", musicSlider.value);
         PlayerPrefs.SetFloat("SFX", sfxSlider.value);
 
-        PlayerPrefs.SetInt("Language", System.Convert.ToInt32(languageToggle.isOn));
-        PlayerPrefs.SetInt("Vibration", System.Convert.ToInt32(vibrationToggle.isOn));
-        PlayerPrefs.SetInt("VFX", System.Convert.ToInt32(vfxToggle.isOn));
-        PlayerPrefs.SetInt("Notices", System.Convert.ToInt32(noticesToggle.isOn));
-        PlayerPrefs.SetInt("FPS", System.Convert.ToInt32(fpsToggle.isOn));
+        PlayerPrefs.SetInt("Language", Convert.ToInt32(languageToggle.isOn));
+        PlayerPrefs.SetInt("Vibration", Convert.ToInt32(vibrationToggle.isOn));
+        PlayerPrefs.SetInt("VFX", Convert.ToInt32(vfxToggle.isOn));
+        PlayerPrefs.SetInt("Notices", Convert.ToInt32(noticesToggle.isOn));
+        PlayerPrefs.SetInt("FPS", Convert.ToInt32(fpsToggle.isOn));
         fps.SetActive(fpsToggle.isOn);
-        PlayerPrefs.SetInt("NightMode", System.Convert.ToInt32(nightModeToggle.isOn));
+        PlayerPrefs.SetInt("NightMode", Convert.ToInt32(nightModeToggle.isOn));
 
         settingsPanel.gameObject.SetActive(false);
         PlayerPrefs.Save();
@@ -125,23 +138,22 @@ public class UIManager : MonoBehaviour
         if (PlayerPrefs.HasKey("SFX")) sfxSlider.value = PlayerPrefs.GetFloat("SFX");
         else sfxSlider.value = 1;
 
-        if (PlayerPrefs.HasKey("Language")) languageToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Language"));
+        if (PlayerPrefs.HasKey("Language")) languageToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("Language"));
         else languageToggle.isOn = true;
-
-        if (PlayerPrefs.HasKey("Vibration")) vibrationToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Vibration"));
+        if (PlayerPrefs.HasKey("Vibration")) vibrationToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("Vibration"));
         else vibrationToggle.isOn = true;
-        if (PlayerPrefs.HasKey("VFX")) vfxToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("VFX"));
+        if (PlayerPrefs.HasKey("VFX")) vfxToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("VFX"));
         else vfxToggle.isOn = true;
-        if (PlayerPrefs.HasKey("Notices")) noticesToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("Notices"));
+        if (PlayerPrefs.HasKey("Notices")) noticesToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("Notices"));
         else noticesToggle.isOn = true;
-        if (PlayerPrefs.HasKey("FPS")) fpsToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("FPS"));
+        if (PlayerPrefs.HasKey("FPS")) fpsToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("FPS"));
         else fpsToggle.isOn = false;
         fps.SetActive(fpsToggle.isOn);
-        if (PlayerPrefs.HasKey("NightMode")) nightModeToggle.isOn = System.Convert.ToBoolean(PlayerPrefs.GetInt("NightMode"));
+        if (PlayerPrefs.HasKey("NightMode")) nightModeToggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("NightMode"));
         else nightModeToggle.isOn = false;
     }
 
-    public void ResetSettings() { //Сброс настроек
+    public void ResetSettings() {
         PlayerPrefs.DeleteKey("Quality");
         PlayerPrefs.DeleteKey("Music");
         PlayerPrefs.DeleteKey("SFX");
@@ -154,9 +166,9 @@ public class UIManager : MonoBehaviour
         LoadSettings();
     }
 
-    //Чит-Код
+    //ЧИТ-КОДЫ
 
-    public void Console() { //Чит консоль
+    public void Console() {
         switch (inputField.text) {
             case ("1"):
             Debug.Log("1");
@@ -168,5 +180,12 @@ public class UIManager : MonoBehaviour
         }
 
         inputField.text = "";
+    }
+
+    //ДРУГОЕ
+
+    public void SetTextPoints(int point, int numberBalls) {
+        pointDisplay.text = point.ToString();
+        ballDisplay.text = numberBalls.ToString();
     }
 }
