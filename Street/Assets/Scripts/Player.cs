@@ -127,7 +127,9 @@ public class Player : MonoBehaviour {
 
             if (Input.GetKey(KeyCode.F2)) { //Обнуление всех данных
                 saveScript.ResetData();
+                ballScript.SetPointsBalls(0, 0);
                 UIManagerScript.SetTextPoints(ballScript.GetPointsBallsAddingPoints(1), ballScript.GetPointsBallsAddingPoints(2));
+                Debug.Log("");
             }
         }
     }

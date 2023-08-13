@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 public class Ball : MonoBehaviour
 {
@@ -41,6 +42,10 @@ public class Ball : MonoBehaviour
     private float ballHeightFactor;
     private float ballTimeRatio;
 
+    private int soundKickFlag = 1;
+    private int soundHitFlag = 1;
+    private int soundMissFlag = 1;
+
     private int num = 0;
     private int pnt = 0;
     private int mss = 0;
@@ -48,8 +53,9 @@ public class Ball : MonoBehaviour
     private Stamina staminaScript; //Объекты для кеширования
     private Player playerScript;
     private Bar barScript;
-    private SaveAndLoad saveScript;
     private UIManager UIManagerScript;
+    private SoundBall soundBall;
+    private SaveAndLoad saveScript;
     private Rigidbody rigidBodyBall;
     private Rigidbody rigidBodyPlayer;
 
@@ -61,6 +67,7 @@ public class Ball : MonoBehaviour
         playerScript = player.GetComponent<Player>();
         barScript = bar.GetComponent<Bar>();
         UIManagerScript = UIManager.GetComponent<UIManager>();
+        soundBall = GetComponent<SoundBall>();
         saveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>();
     }
 
@@ -93,7 +100,7 @@ public class Ball : MonoBehaviour
                 }
                 else {
                     ball.transform.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
-
+                    OnKickSound();
                     buttonDownB = false;
                 }
 
@@ -117,6 +124,7 @@ public class Ball : MonoBehaviour
             }
             else {
                 ball.transform.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
+                OnKickSound();
             }
         }
         else {
@@ -171,7 +179,13 @@ public class Ball : MonoBehaviour
 
             ball.transform.Rotate(Random.Range(-1f, -0.55f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
 
+            if (time >= 0.85f && soundHitFlag == 1) {
+                soundBall.OnHitSound();
+                soundHitFlag = 0;
+            }
+
             if (time >= 1) {
+                soundHitFlag = 1;
                 ballFlying = false;
                 rigidBodyBall.isKinematic = false;
 
@@ -219,7 +233,13 @@ public class Ball : MonoBehaviour
 
             ball.transform.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
 
+            if (time >= 0.85f && soundMissFlag == 1) {
+                soundBall.OnMissSound();
+                soundMissFlag = 0;
+            }
+
             if (time >= 1) {
+                soundMissFlag = 1;
                 ballFlying = false;
                 rigidBodyBall.isKinematic = false;
                 barScript.SetChance(0f);
@@ -228,6 +248,16 @@ public class Ball : MonoBehaviour
         }
     }
 
+    private void OnKickSound() {
+        if (ball.transform.position.y <= posDribble.position.y + 0.35 && soundKickFlag == 1) {
+            soundBall.OnKickSound();
+            soundKickFlag = 0;
+        }
+
+        if(ball.transform.position.y > posDribble.position.y + 0.35 && soundKickFlag == 0) {
+            soundKickFlag = 1;
+        }
+    }
     public void ButtonUp() {
         buttonUpB = true;
     }
@@ -260,6 +290,10 @@ public class Ball : MonoBehaviour
             return ballStart;
         }
         else { return false; }
+    }
+    public void SetPointsBalls(int valuePoint, int valueBall) {
+        point = valuePoint;
+        numberBalls = valueBall;
     }
     public void SetBallPosition(int N, bool value) {
         if (N == 1) {
