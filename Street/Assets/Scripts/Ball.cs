@@ -1,11 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
-public class Ball : MonoBehaviour
-{
+public class Ball : MonoBehaviour {
     [Header("Îáúåêòû")]
     [SerializeField] private GameObject ball;
+    [SerializeField] private Transform ballT;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject bar;
     [SerializeField] private GameObject stamina;
@@ -36,8 +34,8 @@ public class Ball : MonoBehaviour
     private int hitSuperPoint = 0;
     private float t0 = 0;
 
-    private bool buttonUpB = false;
-    private bool buttonDownB = false;
+    public bool buttonUpB = false;
+    public bool buttonDownB = false;
 
     private float ballHeightFactor;
     private float ballTimeRatio;
@@ -72,7 +70,7 @@ public class Ball : MonoBehaviour
     }
 
     private void Start() {
-        ball.transform.position = positionBall.position;
+        ballT.position = positionBall.position;
 
         saveScript.LoadPointsAndBalls();
         point = saveScript.GetPoints();
@@ -96,12 +94,11 @@ public class Ball : MonoBehaviour
 
             if (staminaScript.StaminaCheck() == 1) {
                 if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !banThrowOutsideSquare && !banThrowInDeadZone) {
-                    ball.transform.position = posOverHead.position;
+                    ballT.position = posOverHead.position;
                 }
                 else {
-                    ball.transform.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
+                    ballT.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
                     OnKickSound();
-                    buttonDownB = false;
                 }
 
                 if ((buttonUpB || Input.GetKeyUp(KeyCode.Space)) && !banThrowOutsideSquare && !banThrowInDeadZone && !ballFlying) {
@@ -115,21 +112,13 @@ public class Ball : MonoBehaviour
 
                     ballInHands = false;
                     ballFlying = true;
-                    buttonDownB = false;
-                    buttonUpB = false;
-                }
-                else {
                     buttonUpB = false;
                 }
             }
             else {
-                ball.transform.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
+                ballT.position = posDribble.position + Vector3.up * Mathf.Abs(Mathf.Sin(Time.time * 5) * 2);
                 OnKickSound();
             }
-        }
-        else {
-            buttonDownB = false;
-            buttonUpB = false;
         }
 
         if (ballFlying && !ballStart) {
@@ -175,9 +164,9 @@ public class Ball : MonoBehaviour
             Vector3 B = target.position;
             Vector3 posFly = Vector3.Lerp(A, B, time);
             Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
-            ball.transform.position = posFly + arc;
+            ballT.position = posFly + arc;
 
-            ball.transform.Rotate(Random.Range(-1f, -0.55f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+            ballT.Rotate(Random.Range(-1f, -0.55f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
 
             if (time >= 0.85f && soundHitFlag == 1) {
                 soundBall.OnHitSound();
@@ -217,7 +206,7 @@ public class Ball : MonoBehaviour
                 UIManagerScript.SetTextPoints(point, numberBalls);
 
                 saveScript.SaveCharacteristicsAndPoints();
-                bar.gameObject.SetActive(false);
+                bar.SetActive(false);
             }
         }
         else {
@@ -229,9 +218,9 @@ public class Ball : MonoBehaviour
             Vector3 B = misses[mss - 1].position;
             Vector3 posFly = Vector3.Lerp(A, B, time);
             Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
-            ball.transform.position = posFly + arc;
+            ballT.position = posFly + arc;
 
-            ball.transform.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+            ballT.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
 
             if (time >= 0.85f && soundMissFlag == 1) {
                 soundBall.OnMissSound();
@@ -243,26 +232,28 @@ public class Ball : MonoBehaviour
                 ballFlying = false;
                 rigidBodyBall.isKinematic = false;
                 barScript.SetChance(0f);
-                bar.gameObject.SetActive(false);
+                bar.SetActive(false);
             }
         }
     }
 
     private void OnKickSound() {
-        if (ball.transform.position.y <= posDribble.position.y + 0.35 && soundKickFlag == 1) {
+        if (ballT.position.y <= posDribble.position.y + 0.35 && soundKickFlag == 1) {
             soundBall.OnKickSound();
             soundKickFlag = 0;
         }
 
-        if(ball.transform.position.y > posDribble.position.y + 0.35 && soundKickFlag == 0) {
+        if (ballT.position.y > posDribble.position.y + 0.35 && soundKickFlag == 0) {
             soundKickFlag = 1;
         }
     }
     public void ButtonUp() {
-        buttonUpB = true;
+        buttonUpB = ballInHands;
+        buttonDownB = false;
     }
     public void ButtonDown() {
         buttonDownB = true;
+        buttonUpB = false;
     }
     public bool GetButtonDown() {
         return buttonDownB;
@@ -280,7 +271,7 @@ public class Ball : MonoBehaviour
         else { return 0; }
     }
     public bool GetBallPosition(int N) {
-        if(N == 1) {
+        if (N == 1) {
             return ballInHands;
         }
         else if (N == 2) {
@@ -304,7 +295,7 @@ public class Ball : MonoBehaviour
         }
     }
     public void SetZone(int N, bool value) {
-        if( N == 2) {
+        if (N == 2) {
             twoPoint = value;
         }
         else if (N == 3) {

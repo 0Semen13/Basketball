@@ -96,9 +96,8 @@ public class Player : MonoBehaviour {
             if (staminaScript.StaminaCheck() == 1) {
                 if ((ballScript.GetButtonDown() || Input.GetKey(KeyCode.Space)) && !ballScript.GetZone(6) && !ballScript.GetZone(5)) {
                     rigidBodyPlayer.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                    
+
                     bar.SetActive(true);
-                    animator.SetFloat("Move", 0);
                     animator.SetBool("Throw", true);
 
                     player.LookAt(target.position);
@@ -129,7 +128,6 @@ public class Player : MonoBehaviour {
                 saveScript.ResetData();
                 ballScript.SetPointsBalls(0, 0);
                 UIManagerScript.SetTextPoints(ballScript.GetPointsBallsAddingPoints(1), ballScript.GetPointsBallsAddingPoints(2));
-                Debug.Log("");
             }
         }
     }

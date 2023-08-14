@@ -7,6 +7,6 @@ public class SoundStep : MonoBehaviour
 
     public void OnStep() {
         StepSound.pitch = Random.Range(0.85f, 1.15f);
-        StepSound.PlayOneShot(Steps[Random.Range(0, Steps.Length - 1)], 0.5f);
+        StepSound.PlayOneShot(Steps[Random.Range(0, Steps.Length - 1)], 0.6f);
     }
 }

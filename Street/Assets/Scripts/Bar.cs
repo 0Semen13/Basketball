@@ -10,6 +10,8 @@ public class Bar : MonoBehaviour {
     [SerializeField] private float startChanceSpeed;
     [SerializeField] private float increasingBarSpeed;
 
+    [SerializeField] private Ball ballScript;
+
     private int flagVsBarRepet = 0; //Флаг, не начинающий бар с начала, пока кнопка не будет отпущена
 
     private bool buttonUp = false;
@@ -20,7 +22,7 @@ public class Bar : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (Input.GetKey(KeyCode.Space) || buttonDown) {
+        if ((Input.GetKey(KeyCode.Space) || buttonDown) && !ballScript.GetBallPosition(2)) {
             if (flagVsBarRepet == 0) {
                 if (chance < 105) {
                     chance += currentChanceSpeed;
@@ -35,7 +37,6 @@ public class Bar : MonoBehaviour {
 
         if (Input.GetKeyUp(KeyCode.Space) || buttonUp) {
             flagVsBarRepet = 0;
-            buttonUp = false;
 
             if (chance > 100 && chance <= 110) {
                 chance = 115;
@@ -43,6 +44,8 @@ public class Bar : MonoBehaviour {
             else if (chance > 110) {
                 chance = 35;
             }
+
+            buttonUp = false;
         }
 
         chanceBar.fillAmount = chance / maxChance;

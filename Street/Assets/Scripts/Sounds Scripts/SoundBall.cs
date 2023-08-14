@@ -8,14 +8,14 @@ public class SoundBall : MonoBehaviour
 
     [SerializeField] private AudioSource Sound;
 
-    public void OnHitSound() {
-        Sound.pitch = Random.Range(0.85f, 1.15f);
-        Sound.PlayOneShot(Hits[Random.Range(0, Hits.Length - 1)], 1.1f);
-    }
-
     public void OnKickSound() {
         Sound.pitch = Random.Range(0.85f, 1.15f);
         Sound.PlayOneShot(Kicks[Random.Range(0, Kicks.Length - 1)], 0.65f);
+    }
+
+    public void OnHitSound() {
+        Sound.pitch = Random.Range(0.85f, 1.15f);
+        Sound.PlayOneShot(Hits[Random.Range(0, Hits.Length - 1)], 0.9f);
     }
 
     public void OnMissSound() {

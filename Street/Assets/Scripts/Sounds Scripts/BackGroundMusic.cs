@@ -5,25 +5,29 @@ public class BackGroundMusic : MonoBehaviour
     [SerializeField] private AudioClip[] Musics;
     [SerializeField] private AudioSource MusicAS;
 
+    [Tooltip("Минимум 2 раза")]
     [SerializeField] private int Repeats;
 
-    private int NumberRepeats = 0;
-    private int AudioNumber = 0;
+    private int NumberRepeats = 1;
+    private int AudioIndex;
 
     private void Start() {
-        MusicAS.PlayOneShot(Musics[AudioNumber], 0.3f);
+        AudioIndex = Random.Range(0, 4);
+        MusicAS.PlayOneShot(Musics[AudioIndex], 0.6f);
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         if (!MusicAS.isPlaying) {
-            MusicAS.PlayOneShot(Musics[AudioNumber], 0.3f);
-            NumberRepeats++;
+            MusicAS.PlayOneShot(Musics[AudioIndex], 0.6f);
 
-            if (NumberRepeats == Repeats - 1) {
+            if (NumberRepeats + 1 == Repeats) {
                 NumberRepeats = 0;
-                AudioNumber++;
 
-                if(AudioNumber > Musics.Length) AudioNumber = 0;
+                if (AudioIndex + 1 > Musics.Length - 1) AudioIndex = 0;
+                else AudioIndex++;
+            }
+            else {
+                NumberRepeats++;
             }
         }
     }

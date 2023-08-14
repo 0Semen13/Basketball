@@ -10,7 +10,7 @@ public class TextLocaliserUI : MonoBehaviour {
 
     private void Start() {
         UIManagerScript = GameObject.Find("UIManager").GetComponent<UIManager>();
-        UIManagerScript.onLanguageChange += LanguageUpdatesEvents;
+        UIManagerScript.OnLanguageChange += LanguageUpdatesEvents;
 
         LanguageUpdates();
     }

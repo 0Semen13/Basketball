@@ -1,6 +1,6 @@
 using System;
-using System.Drawing;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -36,13 +36,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text twoPointsText;
     [SerializeField] private Text threePointsText;
     [SerializeField] private Text extraLongPointsText;
-
     [SerializeField] private Text pointDisplay;
     [SerializeField] private Text ballDisplay;
 
+    [SerializeField] private AudioMixerGroup mixer;
+
     private Player playerScript;
 
-    public event EventHandler onLanguageChange;
+    public event EventHandler OnLanguageChange;
 
     private void Awake() {
         playerScript = GameObject.Find("Player").GetComponent<Player>();
@@ -50,18 +51,18 @@ public class UIManager : MonoBehaviour
 
     private void Start() {
         if (PlayerPrefs.GetInt("firstStart") == 0) {
-            settingsPanel.gameObject.SetActive(true);
-            trainingPanel_1.gameObject.SetActive(true);
+            settingsPanel.SetActive(true);
+            trainingPanel_1.SetActive(true);
         }
         else {
-            settingsPanel.gameObject.SetActive(false);
-            trainingPanel_1.gameObject.SetActive(false);
+            settingsPanel.SetActive(false);
+            trainingPanel_1.SetActive(false);
         }
-        trainingPanel_2.gameObject.SetActive(false);
-        pausePanel.gameObject.SetActive(false);
-        promoCodePanel.gameObject.SetActive(false);
-        characteristicsPanel.gameObject.SetActive(false);
-        aboutTheGamePanel.gameObject.SetActive(false);
+        trainingPanel_2.SetActive(false);
+        pausePanel.SetActive(false);
+        promoCodePanel.SetActive(false);
+        characteristicsPanel.SetActive(false);
+        aboutTheGamePanel.SetActive(false);
 
         versionText.text = "Version: " + Application.version;
 
@@ -72,8 +73,8 @@ public class UIManager : MonoBehaviour
 
     public void PauseOpen() {
         Time.timeScale = 0;
-        pausePanel.gameObject.SetActive(true);
-        canvasControlPhone.gameObject.SetActive(false);
+        pausePanel.SetActive(true);
+        canvasControlPhone.SetActive(false);
 
         for(int i = 0; i < buttons.Length; i++) {
             buttons[i].interactable = false;
@@ -82,8 +83,8 @@ public class UIManager : MonoBehaviour
 
     public void PauseClose() {
         Time.timeScale = 1;
-        pausePanel.gameObject.SetActive(false);
-        canvasControlPhone.gameObject.SetActive(true);
+        pausePanel.SetActive(false);
+        canvasControlPhone.SetActive(true);
 
         for (int i = 0; i < buttons.Length; i++) {
             buttons[i].interactable = true;
@@ -106,9 +107,17 @@ public class UIManager : MonoBehaviour
         QualitySettings.SetQualityLevel(qualityIndex);
     }
 
+    public void ChangeMusic(float volume) {
+        mixer.audioMixer.SetFloat("MusicVolume", Mathf.Lerp(-50, 10, volume));
+    }
+
+    public void ChangeSound(float volume) {
+        mixer.audioMixer.SetFloat("EffectsVolume", Mathf.Lerp(-50, 10, volume));
+    }
+
     public void SetLanguage() {
         LocalisationSystem.SetLanguage(languageToggle.isOn);
-        onLanguageChange?.Invoke(this, EventArgs.Empty);
+        OnLanguageChange?.Invoke(this, EventArgs.Empty);
     }
 
     public void SaveSettings() {
@@ -125,7 +134,7 @@ public class UIManager : MonoBehaviour
         fps.SetActive(fpsToggle.isOn);
         PlayerPrefs.SetInt("NightMode", Convert.ToInt32(nightModeToggle.isOn));
 
-        settingsPanel.gameObject.SetActive(false);
+        settingsPanel.SetActive(false);
         PlayerPrefs.Save();
     }
 
