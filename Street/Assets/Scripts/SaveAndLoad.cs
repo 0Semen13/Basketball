@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 
 public class SaveAndLoad : MonoBehaviour {
@@ -14,14 +16,18 @@ public class SaveAndLoad : MonoBehaviour {
     private int addingPoints_S;
     private float chanceSpeed_S;
 
+    private float stamina_S;
+
     private Player playerScript;
     private Bar barScript;
     private Ball ballScript;
+    private Stamina staminaScript;
 
     private void Awake() {
         playerScript = GameObject.Find("Player").GetComponent<Player>();
         barScript = GameObject.Find("Bar").GetComponent<Bar>();
         ballScript = GameObject.Find("Ball").GetComponent<Ball>();
+        staminaScript = GameObject.Find("Stamina").GetComponent<Stamina>();
     }
 
     public void SaveCharacteristicsAndPoints() {
@@ -59,13 +65,36 @@ public class SaveAndLoad : MonoBehaviour {
         PlayerPrefs.Save();
     }
 
+    public void SaveStamina() {
+        stamina_S = staminaScript.GetStamina();
+        PlayerPrefs.SetFloat("stamina", stamina_S);
+
+        PlayerPrefs.Save();
+    }
+
+    public void SaveDateTime (string key, DateTime value) {
+        string convertedToString = value.ToString("u", CultureInfo.InvariantCulture);
+        PlayerPrefs.SetString(key, convertedToString);
+    }
+
+    public DateTime LoadDateTime (string key, DateTime defaultValue) {
+        if (PlayerPrefs.HasKey(key)) {
+            string stored = PlayerPrefs.GetString(key);
+            DateTime result = DateTime.ParseExact(stored, "u", CultureInfo.InvariantCulture);
+            return result;
+        }
+        else  {
+            return defaultValue;
+        }
+    }
+
     public void LoadCharacteristics() {
         p2Point_STR = PlayerPrefs.GetString("Percentage2Point");
-        percentage2Point_S = double.Parse(p2Point_STR, System.Globalization.CultureInfo.InvariantCulture);
+        percentage2Point_S = double.Parse(p2Point_STR, CultureInfo.InvariantCulture);
         p3Point_STR = PlayerPrefs.GetString("Percentage3Point");
-        percentage3Point_S = double.Parse(p3Point_STR, System.Globalization.CultureInfo.InvariantCulture);
+        percentage3Point_S = double.Parse(p3Point_STR, CultureInfo.InvariantCulture);
         pExtraLong_STR = PlayerPrefs.GetString("PercentageExtraLong");
-        percentageExtraLong_S = double.Parse(pExtraLong_STR, System.Globalization.CultureInfo.InvariantCulture);
+        percentageExtraLong_S = double.Parse(pExtraLong_STR, CultureInfo.InvariantCulture);
     }
 
     public void LoadPointsAndBalls() {
@@ -81,12 +110,15 @@ public class SaveAndLoad : MonoBehaviour {
         addingPoints_S = PlayerPrefs.GetInt("addingPoints");
     }
 
+    public void LoadStamina() {
+        stamina_S = PlayerPrefs.GetFloat("stamina");
+    }
+
     public void ResetData() {
         PlayerPrefs.DeleteAll();
         point_S = 0;
         numberBalls_S = 0;
     }
-
     public int GetPoints() {
         return point_S;
     }
@@ -105,7 +137,10 @@ public class SaveAndLoad : MonoBehaviour {
     public int GetAddingPoint() {
         return addingPoints_S;
     }
-    public float GetChanceSpeed() {
+    public float GetBarSpeed() {
         return chanceSpeed_S;
+    }
+    public float GetStamina() {
+        return stamina_S;
     }
 }

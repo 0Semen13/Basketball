@@ -72,18 +72,19 @@ public class Ball : MonoBehaviour {
     private void Start() {
         ballT.position = positionBall.position;
 
+        if (PlayerPrefs.GetInt("firstStart") == 0) {
+            addingPoints = startAddingPoints;
+            saveScript.SaveAddingPoints();
+        }
+        else {
+            saveScript.LoadAddingPoints();
+            addingPoints = saveScript.GetAddingPoint();
+        }
+
         saveScript.LoadPointsAndBalls();
         point = saveScript.GetPoints();
         numberBalls = saveScript.GetBalls();
         UIManagerScript.SetTextPoints(point, numberBalls);
-
-        if (PlayerPrefs.GetInt("firstStart") == 0) {
-            addingPoints = startAddingPoints;
-        }
-
-        saveScript.LoadAddingPoints();
-        addingPoints = saveScript.GetAddingPoint();
-
     }
 
     private void FixedUpdate() {
@@ -92,7 +93,7 @@ public class Ball : MonoBehaviour {
             ballStart = false;
             pnt = 0;
 
-            if (staminaScript.StaminaCheck() == 1) {
+            if (staminaScript.GetStamina() > 0) {
                 if ((buttonDownB || Input.GetKey(KeyCode.Space)) && !banThrowOutsideSquare && !banThrowInDeadZone) {
                     ballT.position = posOverHead.position;
                 }

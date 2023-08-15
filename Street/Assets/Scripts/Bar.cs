@@ -17,8 +17,23 @@ public class Bar : MonoBehaviour {
     private bool buttonUp = false;
     private bool buttonDown = false;
 
+    private SaveAndLoad saveScript;
+
+    private void Awake() {
+        saveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>();
+    }
+
     private void Start() {
         chance = 0f;
+
+        if (PlayerPrefs.GetInt("firstStart") == 0) {
+            currentChanceSpeed = startChanceSpeed;
+            saveScript.SaveBarSpeed();
+        }
+        else {
+            saveScript.LoadBarSpeed();
+            currentChanceSpeed = saveScript.GetBarSpeed();
+        }
     }
 
     private void FixedUpdate() {
@@ -62,9 +77,6 @@ public class Bar : MonoBehaviour {
     public float GetMaxChance() {
         return maxChanceSpeed;
     }
-    public float GetStartChance() {
-        return startChanceSpeed;
-    }
     public float GetCurrentChance() {
         return currentChanceSpeed;
     }
@@ -74,17 +86,8 @@ public class Bar : MonoBehaviour {
     public float GetChance() {
         return chance;
     }
-    public void SetMaxChance(float value) {
-        maxChanceSpeed = value;
-    }
-    public void SetStartChance(float value) {
-        startChanceSpeed = value;
-    }
     public void SetCurrentChance(float value) {
         currentChanceSpeed = value;
-    }
-    public void SetIncreasingBarSpeed(float value) {
-        increasingBarSpeed = value;
     }
     public void SetChance(float value) {
         chance = value;

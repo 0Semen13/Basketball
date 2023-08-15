@@ -34,7 +34,6 @@ public class Player : MonoBehaviour {
     private GameObject ball;  //Объекты для кеширования
     private SaveAndLoad saveScript;
     private Ball ballScript;
-    private Bar barScript;
     private Stamina staminaScript;
     private UIManager UIManagerScript;
     private Rigidbody rigidBodyPlayer;
@@ -48,7 +47,6 @@ public class Player : MonoBehaviour {
         rigidBodyBall = ball.GetComponent<Rigidbody>();
         saveScript = GameObject.Find("Save And Load").GetComponent<SaveAndLoad>();
         ballScript = ball.GetComponent<Ball>();
-        barScript = bar.GetComponent<Bar>();
         staminaScript = stamina.GetComponent<Stamina>();
         UIManagerScript = UIManager.GetComponent<UIManager>();
         animator = model.GetComponent<Animator>();
@@ -60,18 +58,13 @@ public class Player : MonoBehaviour {
             currentPercentage3Points = startPercentage3Points;
             currentPercentageExtraLong = startPercentageExtraLong;
             saveScript.SaveCharacteristicsAndPoints();
-            saveScript.SaveAddingPoints();
-            barScript.SetCurrentChance(barScript.GetStartChance());
-            saveScript.SaveBarSpeed();
         }
-
-        saveScript.LoadCharacteristics(); //Загрузка данных
-        currentPercentage2Point = saveScript.GetPercentage2Point();
-        currentPercentage3Points = saveScript.GetPercentage3Point();
-        currentPercentageExtraLong = saveScript.GetPercentageExtraLong();
-
-        saveScript.LoadBarSpeed();
-        barScript.SetCurrentChance(saveScript.GetChanceSpeed());
+        else {
+            saveScript.LoadCharacteristics();
+            currentPercentage2Point = saveScript.GetPercentage2Point();
+            currentPercentage3Points = saveScript.GetPercentage3Point();
+            currentPercentageExtraLong = saveScript.GetPercentageExtraLong();
+        }
 
         player.position = teleportPosition.position;
 
@@ -93,7 +86,7 @@ public class Player : MonoBehaviour {
             speed = speedWithTheBalled;
             animator.SetBool("Ball", true);
 
-            if (staminaScript.StaminaCheck() == 1) {
+            if (staminaScript.GetStamina() > 0) {
                 if ((ballScript.GetButtonDown() || Input.GetKey(KeyCode.Space)) && !ballScript.GetZone(6) && !ballScript.GetZone(5)) {
                     rigidBodyPlayer.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
