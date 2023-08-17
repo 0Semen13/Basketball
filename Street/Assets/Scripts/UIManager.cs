@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Toggle nightModeToggle;
     [SerializeField] private Text versionText;
 
-    [SerializeField] private GameObject canvasControlPhone;
+    [SerializeField] private Canvas canvasControlPhone;
     [SerializeField] private Button[] buttons;
     [SerializeField] private GameObject fps;
 
@@ -50,14 +50,11 @@ public class UIManager : MonoBehaviour
     }
 
     private void Start() {
-        if (PlayerPrefs.GetInt("firstStart") == 0) {
-            settingsPanel.SetActive(true);
-            trainingPanel_1.SetActive(true);
-        }
-        else {
+        if (PlayerPrefs.GetInt("firstStart") != 0) {
             settingsPanel.SetActive(false);
             trainingPanel_1.SetActive(false);
         }
+
         trainingPanel_2.SetActive(false);
         pausePanel.SetActive(false);
         promoCodePanel.SetActive(false);
@@ -72,9 +69,8 @@ public class UIManager : MonoBehaviour
     // œ¿”« ¿
 
     public void PauseOpen() {
-        Time.timeScale = 0;
         pausePanel.SetActive(true);
-        canvasControlPhone.SetActive(false);
+        canvasControlPhone.enabled = false;
 
         for(int i = 0; i < buttons.Length; i++) {
             buttons[i].interactable = false;
@@ -82,9 +78,8 @@ public class UIManager : MonoBehaviour
     }
 
     public void PauseClose() {
-        Time.timeScale = 1;
         pausePanel.SetActive(false);
-        canvasControlPhone.SetActive(true);
+        canvasControlPhone.enabled = true;
 
         for (int i = 0; i < buttons.Length; i++) {
             buttons[i].interactable = true;
@@ -108,11 +103,11 @@ public class UIManager : MonoBehaviour
     }
 
     public void ChangeMusic(float volume) {
-        mixer.audioMixer.SetFloat("MusicVolume", Mathf.Lerp(-50, 10, volume));
+        mixer.audioMixer.SetFloat("MusicVolume", Mathf.Lerp(-68, 15, volume));
     }
 
     public void ChangeSound(float volume) {
-        mixer.audioMixer.SetFloat("EffectsVolume", Mathf.Lerp(-50, 10, volume));
+        mixer.audioMixer.SetFloat("EffectsVolume", Mathf.Lerp(-68, 15, volume));
     }
 
     public void SetLanguage() {
@@ -192,6 +187,13 @@ public class UIManager : MonoBehaviour
     }
 
     //ƒ–”√Œ≈
+
+    public void FirstRun() {
+        if (PlayerPrefs.GetInt("firstStart") == 0) {
+            settingsPanel.SetActive(true);
+            trainingPanel_1.SetActive(true);
+        }
+    }
 
     public void SetTextPoints(int point, int numberBalls) {
         pointDisplay.text = point.ToString();

@@ -31,8 +31,9 @@ public class Stamina : MonoBehaviour {
             int secondPassed = (int)timePassed.TotalSeconds;
             secondPassed = Mathf.Clamp(secondPassed, 0, 2 * 60 * 60);
             stamina += secondPassed / staminaBoostTime;
+            saveScript.SaveDateTime("lastSaveTime", DateTime.UtcNow);
 
-            if(stamina > maxStamina) {
+            if (stamina > maxStamina) {
                 stamina = maxStamina;
             }
         }
