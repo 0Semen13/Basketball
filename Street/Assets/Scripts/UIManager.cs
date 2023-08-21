@@ -115,6 +115,10 @@ public class UIManager : MonoBehaviour
         OnLanguageChange?.Invoke(this, EventArgs.Empty);
     }
 
+    public bool GetLanguage() {
+        return languageToggle.isOn;
+    }
+
     public void SaveSettings() {
         PlayerPrefs.SetInt("Quality", qualityDropdown.value);
 

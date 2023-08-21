@@ -53,10 +53,10 @@ public class Bar : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.Space) || buttonUp) {
             flagVsBarRepet = 0;
 
-            if (chance > 100 && chance <= 110) {
-                chance = 115;
+            if (chance > 100 && chance <= 107) {
+                chance = 110;
             }
-            else if (chance > 110) {
+            else if (chance > 107) {
                 chance = 35;
             }
 
@@ -86,7 +86,7 @@ public class Bar : MonoBehaviour {
     public float GetChance() {
         return chance;
     }
-    public void SetCurrentChance(float value) {
+    public void SetCurrentChanceSpeed(float value) {
         currentChanceSpeed = value;
     }
     public void SetChance(float value) {

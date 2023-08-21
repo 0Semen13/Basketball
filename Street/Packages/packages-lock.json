@@ -36,8 +36,8 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.24",
-      "depth": 0,
+      "version": "3.0.14",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6"
@@ -45,7 +45,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.18",
+      "version": "2.0.20",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -92,15 +92,6 @@
       "dependencies": {
         "com.unity.test-framework": "1.0.16",
         "com.unity.settings-manager": "1.0.1"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.textmeshpro": {
-      "version": "3.0.6",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ugui": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },

@@ -17,6 +17,7 @@ public class Ball : MonoBehaviour {
     [Header("Другие поля")]
     [SerializeField] private int startAddingPoints;
     [SerializeField] private int increasingAddingPoints;
+    [SerializeField] private int PointsForCoachAppearance;
     private int addingPoints;
 
     private int point;
@@ -34,8 +35,8 @@ public class Ball : MonoBehaviour {
     private int hitSuperPoint = 0;
     private float t0 = 0;
 
-    public bool buttonUpB = false;
-    public bool buttonDownB = false;
+    private bool buttonUpB = false;
+    private bool buttonDownB = false;
 
     private float ballHeightFactor;
     private float ballTimeRatio;
@@ -167,7 +168,7 @@ public class Ball : MonoBehaviour {
             Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
             ballT.position = posFly + arc;
 
-            ballT.Rotate(Random.Range(-1f, -0.55f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+            ballT.Rotate(Random.Range(-1f, -0.5f), Random.Range(-1f, -0.5f), Random.Range(-1f, -0.5f));
 
             if (time >= 0.85f && soundHitFlag == 1) {
                 soundBall.OnHitSound();
@@ -198,10 +199,16 @@ public class Ball : MonoBehaviour {
                 if (point >= addingPoints) {
                     addingPoints += increasingAddingPoints;
                     if (barScript.GetCurrentChance() < barScript.GetMaxChance()) {
-                        barScript.SetCurrentChance(barScript.GetCurrentChance() + barScript.GetIncreasingBarSpeed());
+                        barScript.SetCurrentChanceSpeed(barScript.GetCurrentChance() + barScript.GetIncreasingBarSpeed());
                         saveScript.SaveBarSpeed();
                     }
                     saveScript.SaveAddingPoints();
+                }
+
+                if (point >= PointsForCoachAppearance && point <= PointsForCoachAppearance + 6) {
+                    if (PlayerPrefs.GetInt("Coach") == 0) {
+                        GameObject.Find("Coach Timeline").GetComponent<CoachTimelinePlayer>().PlayCoachTimeLine();
+                    }
                 }
 
                 UIManagerScript.SetTextPoints(point, numberBalls);
@@ -221,7 +228,7 @@ public class Ball : MonoBehaviour {
             Vector3 arc = Vector3.up * ballHeightFactor * Mathf.Sin(time * 3.14f);
             ballT.position = posFly + arc;
 
-            ballT.Rotate(Random.Range(-0.85f, -0.4f), Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+            ballT.Rotate(Random.Range(-1f, -0.5f), Random.Range(-1f, -0.5f), Random.Range(-1f, -0.5f));
 
             if (time >= 0.85f && soundMissFlag == 1) {
                 soundBall.OnMissSound();

@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float speed;
     private Vector3 rotation = new Vector3(34.5f, 0, 0);
 
-    [SerializeField] private TimelinePlayer timelinePlayerScript;
+    [SerializeField] private StartTimelinePlayer timelinePlayerScript;
 
     private void FixedUpdate() {
         if (!timelinePlayerScript.GetBoolStart()) {
