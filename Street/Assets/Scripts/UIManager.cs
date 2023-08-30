@@ -27,7 +27,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text versionText;
 
     [SerializeField] private Canvas canvasControlPhone;
-    [SerializeField] private Button[] buttons;
     [SerializeField] private GameObject fps;
 
     [TextArea(5, 5)] public string cheatCodes = "Чит коды:";
@@ -71,19 +70,11 @@ public class UIManager : MonoBehaviour
     public void PauseOpen() {
         pausePanel.SetActive(true);
         canvasControlPhone.enabled = false;
-
-        for(int i = 0; i < buttons.Length; i++) {
-            buttons[i].interactable = false;
-        }
     }
 
     public void PauseClose() {
         pausePanel.SetActive(false);
         canvasControlPhone.enabled = true;
-
-        for (int i = 0; i < buttons.Length; i++) {
-            buttons[i].interactable = true;
-        }
     }
 
     public void CharacteristicsOpen() {
@@ -188,6 +179,27 @@ public class UIManager : MonoBehaviour
         }
 
         inputField.text = "";
+    }
+
+    //ЗАДАНИЯ ТРЕНЕРА
+
+    public void ClickButtonCoach() {
+        int typeTraining = UnityEngine.Random.Range(1, 5); // Тип тренировки (бросок, ведение, бросок, ведение и отдых)
+        int trainingOption; // Вариант тренировки (у каждого типа тренировки несколько вариантов)
+
+        if(typeTraining == 1) { //Бросок
+            trainingOption = UnityEngine.Random.Range(0, 5); //6 вариантов
+
+        }
+        else if (typeTraining == 2) { //Ведение
+
+        }
+        else if (typeTraining == 3) { //Ведение и бросок
+
+        }
+        else if (typeTraining == 4) { // Отдых
+
+        }
     }
 
     //ДРУГОЕ

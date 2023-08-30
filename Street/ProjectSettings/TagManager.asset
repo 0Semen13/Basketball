@@ -12,6 +12,9 @@ TagManager:
   - DeadZones
   - Green
   - Limits
+  - Circle
+  - Hexagon
+  - Square
   layers:
   - Default
   - TransparentFX

@@ -17,10 +17,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float speed;
     private Vector3 rotation = new Vector3(34.5f, 0, 0);
 
-    [SerializeField] private StartTimelinePlayer timelinePlayerScript;
+    [SerializeField] private StartTimelinePlayer startTimelinePlayerScript;
 
     private void FixedUpdate() {
-        if (!timelinePlayerScript.GetBoolStart()) {
+        if (!startTimelinePlayerScript.GetBoolStart()) {
             rotation.z = Mathf.Sin(Time.time * speed) * amount;
             rotation.y = Mathf.Cos(Time.time * speed) * amount;
             cameraT.localEulerAngles = cameraT.rotation * rotation;
